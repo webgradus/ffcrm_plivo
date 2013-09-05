@@ -1,0 +1,72 @@
+%script{:type => "text/javascript", :src => "https://s3.amazonaws.com/plivosdk/web/plivo.min.js"}
+:javascript
+  function webrtcNotSupportedAlert() {
+    alert("Your browser doesn't support WebRTC. You need Chrome 25 to use this");
+  }
+
+  function onReady() {
+    console.log("Plivo ready...");
+  }
+
+  function onLogin() {
+    console.log("Plivo logging in...");
+  }
+
+  function onLoginFailed() {
+    console.log("Plivo log in failed...");
+  }
+
+  function onCalling() {
+    console.log("Plivo calling...");
+  }
+
+  function onCallFailed(cause) {
+    console.log("Plivo call failed...");
+    $("flash").update("Can't make a call - " + cause);
+    crm.flash('notice', false);
+  }
+
+  function onCallAnswered() {
+    console.log("Plivo call answered...");
+    $A($$(".plivo-call")).each(function(name, index) {
+      $(name).update('Hangup');
+    });
+  }
+
+  function onCallTerminated() {
+    console.log("Plivo call terminated...");
+    $A($$(".plivo-call")).each(function(name, index) {
+      $(name).update('Call');
+    });
+  }
+
+  document.observe('dom:loaded', function() {
+    Plivo.onWebrtcNotSupported = webrtcNotSupportedAlert;
+    Plivo.onReady = onReady;
+    Plivo.onLogin = onLogin;
+    Plivo.onLoginFailed = onLoginFailed;
+    Plivo.onCalling = onCalling;
+    Plivo.onCallFailed = onCallFailed;
+    Plivo.onCallAnswered = onCallAnswered;
+    Plivo.onCallTerminated = onCallTerminated;
+    Plivo.setRingTone(true);
+    Plivo.init();
+    var username = "#{ Setting['plivo_endpoint_username'] }";
+    var pass = "#{ Setting['plivo_endpoint_password'] }";
+    Plivo.conn.login(username, pass);
+
+    $A($$(".plivo-call")).each(function(name, index) {
+      $(name).observe('click', function() {
+        var dest = $(this).readAttribute('data-phone');
+        if (this.innerHTML == 'Call') {
+          Plivo.conn.call(dest);
+        }
+        else {
+          Plivo.conn.hangup();
+          $(this).update('Call');
+        }
+        return false;
+      });
+    });
+  });
+
