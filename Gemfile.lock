@@ -36,6 +36,7 @@ PATH
   remote: .
   specs:
     ffcrm_plivo (0.0.1)
+      nokogiri
       rails (~> 3.2.14)
 
 GEM
