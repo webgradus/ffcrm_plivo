@@ -50,7 +50,7 @@
     Plivo.onCallAnswered = onCallAnswered;
     Plivo.onCallTerminated = onCallTerminated;
     Plivo.setRingTone(true);
-    Plivo.init();
+    Plivo.init({debug: true});
     var username = "#{ Setting['plivo_endpoint_username'] }";
     var pass = "#{ Setting['plivo_endpoint_password'] }";
     Plivo.conn.login(username, pass);
