@@ -22,5 +22,9 @@ class PlivoController < ApplicationController
         end
         render :xml => builder
     end
+
+    def message
+        # Put your logic handling incoming text messages here
+    end
 end
 

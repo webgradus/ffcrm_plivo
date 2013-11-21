@@ -68,5 +68,13 @@
         return false;
       });
     });
+    $A($$(".plivo-message")).each(function(name, index) {
+      $(name).observe('click', function() {
+        var recipient = $(this).readAttribute('data-phone');
+        $('plivo-message-modal').select("input#recipient[type='hidden']")[0].writeAttribute('value', recipient);
+        Modalbox.show($('plivo-message-modal'), {title: "Send text message", width: 600});
+        return false;
+      });
+    });
   });
 

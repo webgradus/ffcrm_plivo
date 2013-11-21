@@ -2,6 +2,7 @@
 - lost = @account.opportunities.lost.map(&:amount).compact.sum
 - pipeline = @account.opportunities.pipeline.map(&:weighted_amount).compact.sum
 
+= render 'plivo/modal'
 .panel#summary
   %h4= h(@account.name)
   - if @account.website
@@ -18,6 +19,7 @@
     - if @account.phone
       #{t :phone}:
       %button.plivo-call{ :data => {:phone => @account.phone} } Call
+      %button.plivo-message{ :data => {:phone => @account.phone} } Send Text Message
       %br
 
     - if @account.fax

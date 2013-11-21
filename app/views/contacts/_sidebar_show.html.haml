@@ -1,3 +1,4 @@
+= render 'plivo/modal'
 .panel#summary
   %span{:style => "float:right"}= avatar_for(@contact, :size => "50x50")
   %h4= h(@contact.full_name)
@@ -13,6 +14,7 @@
           = content_tag(:strike, h(@contact.phone))
       - else
         %button.plivo-call{ :data => {:phone => @contact.phone} } Call
+      %button.plivo-message{ :data => {:phone => @contact.phone} } Send Text Message
       %br
     - unless @contact.mobile.blank?
       = "#{t :mobile}:"
@@ -21,6 +23,7 @@
           = content_tag(:strike, h(@contact.mobile))
       - else
         %button.plivo-call{ :data => {:phone => @contact.mobile} } Call
+      %button.plivo-message{ :data => {:phone => @contact.mobile} } Send Text Message
       %br
     - unless @contact.fax.blank?
       == #{t :fax}: <b>#{@contact.do_not_call ? content_tag(:strike, h(@contact.fax)) : h(@contact.fax)}</b><br />

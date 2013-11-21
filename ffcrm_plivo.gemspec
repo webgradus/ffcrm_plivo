@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 3.2.14"
   s.add_dependency 'nokogiri'
+  s.add_dependency 'plivo'
   # s.add_dependency "jquery-rails"
 
   s.add_development_dependency "pg"

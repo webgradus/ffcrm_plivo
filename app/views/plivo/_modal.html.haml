@@ -1,0 +1,8 @@
+#plivo-message-modal{ hidden }
+  = form_tag messages_path, :remote => true do
+    = label_tag "Message"
+    %br
+    = hidden_field_tag 'recipient'
+    = text_area_tag 'message', nil, :rows => 6, :cols => 40
+    %br
+    = submit_tag 'Send'
