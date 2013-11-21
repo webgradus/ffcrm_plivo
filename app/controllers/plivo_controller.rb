@@ -25,6 +25,12 @@ class PlivoController < ApplicationController
 
     def message
         # Put your logic handling incoming text messages here
+        builder = Nokogiri::XML::Builder.new do |xml|
+            xml.Response {
+                xml.Message
+            }
+        end
+        render :xml => builder
     end
 end
 
