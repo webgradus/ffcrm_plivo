@@ -13,7 +13,7 @@
         %b
           = content_tag(:strike, h(@contact.phone))
       - else
-        %button.plivo-call{ :data => {:phone => @contact.phone} } Call
+        %button.plivo-call{ :data => {:phone => @contact.phone, :id => @contact.id, :type => Contact.model_name} } Call
       %button.plivo-message{ :data => {:phone => @contact.phone} } Send Text Message
       %br
     - unless @contact.mobile.blank?
@@ -22,7 +22,7 @@
         %b
           = content_tag(:strike, h(@contact.mobile))
       - else
-        %button.plivo-call{ :data => {:phone => @contact.mobile} } Call
+        %button.plivo-call{ :data => {:phone => @contact.mobile, :id => @contact.id, :type => Contact.model_name} } Call
       %button.plivo-message{ :data => {:phone => @contact.mobile} } Send Text Message
       %br
     - unless @contact.fax.blank?

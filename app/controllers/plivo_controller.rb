@@ -9,6 +9,11 @@ class PlivoController < ApplicationController
                 }
             }
         end
+        item = Account.find_by_phone(params["From"]) || Contact.find_by_phone(params["From"])
+        user = User.find_by_phone(params["To"])
+        if item && user
+            Version.create(:whodunnit => user.id.to_s, :event => "inbound_call", :item_id => item.id, :item_type => item.class.model_name)
+        end
         render :xml => builder
     end
 
@@ -31,6 +36,11 @@ class PlivoController < ApplicationController
             }
         end
         render :xml => builder
+    end
+
+    def audit
+        Version.create(params[:version].merge(:whodunnit => PaperTrail.whodunnit))
+        render :nothing => true
     end
 end
 

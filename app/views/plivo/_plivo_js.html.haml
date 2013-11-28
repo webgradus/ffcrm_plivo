@@ -60,6 +60,13 @@
         var dest = $(this).readAttribute('data-phone');
         if (this.innerHTML == 'Call') {
           Plivo.conn.call(dest);
+          jQuery.post('/plivo/audit', {
+            version: {
+              "event": "outbound_call",
+              item_id: $(this).readAttribute('data-id'),
+              item_type: $(this).readAttribute('data-type')
+            }
+          });
         }
         else {
           Plivo.conn.hangup();
