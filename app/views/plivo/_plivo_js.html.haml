@@ -18,29 +18,43 @@
 
   function onCalling() {
     console.log("Plivo calling...");
+    jQuery(".plivo-call").text('Hangup');
   }
 
   function onCallFailed(cause) {
     console.log("Plivo call failed...");
-    $("flash").update("Can't make a call - " + cause);
+    jQuery("#flash").text("Can't make a call - " + cause);
     crm.flash('notice', false);
+    jQuery(".plivo-call").text('Call');
   }
 
   function onCallAnswered() {
     console.log("Plivo call answered...");
-    $A($$(".plivo-call")).each(function(name, index) {
-      $(name).update('Hangup');
-    });
+    jQuery(".plivo-call").text('Hangup');
   }
 
   function onCallTerminated() {
     console.log("Plivo call terminated...");
-    $A($$(".plivo-call")).each(function(name, index) {
-      $(name).update('Call');
-    });
+    jQuery(".plivo-call").text('Call');
   }
 
-  document.observe('dom:loaded', function() {
+  function onMediaPermission(result) {
+    if (result) {
+      console.log("get media permission");
+    } else {
+      alert("you don't allow media permission, you will can't make a call until you allow it");
+    }
+  }
+
+  function onIncomingCall(account_name, extraHeaders) {
+    console.log("onIncomingCall:"+account_name);
+    console.log("extraHeaders=");
+    for (var key in extraHeaders) {
+      console.log("key="+key+".val="+extraHeaders[key]);
+    }
+  }
+
+  jQuery(document).ready(function() {
     Plivo.onWebrtcNotSupported = webrtcNotSupportedAlert;
     Plivo.onReady = onReady;
     Plivo.onLogin = onLogin;
@@ -49,39 +63,29 @@
     Plivo.onCallFailed = onCallFailed;
     Plivo.onCallAnswered = onCallAnswered;
     Plivo.onCallTerminated = onCallTerminated;
+    Plivo.onMediaPermission = onMediaPermission;
+    Plivo.onIncomingCall = onIncomingCall;
     Plivo.setRingTone(true);
     Plivo.init({debug: true});
     var username = "#{ Setting['plivo_endpoint_username'] }";
     var pass = "#{ Setting['plivo_endpoint_password'] }";
     Plivo.conn.login(username, pass);
 
-    $A($$(".plivo-call")).each(function(name, index) {
-      $(name).observe('click', function() {
-        var dest = $(this).readAttribute('data-phone');
-        if (this.innerHTML == 'Call') {
-          Plivo.conn.call(dest);
-          jQuery.post('/plivo/audit', {
-            version: {
-              "event": "outbound_call",
-              item_id: $(this).readAttribute('data-id'),
-              item_type: $(this).readAttribute('data-type')
-            }
-          });
+    jQuery(document).on('click', '.plivo-call', function() {
+        var dest = jQuery(this).data('phone');
+        if (jQuery(this).text() != 'Hangup') {
+          Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.phone}"});
         }
         else {
           Plivo.conn.hangup();
-          $(this).update('Call');
+          jQuery(this).text('Call');
         }
         return false;
-      });
     });
-    $A($$(".plivo-message")).each(function(name, index) {
-      $(name).observe('click', function() {
-        var recipient = $(this).readAttribute('data-phone');
-        $('plivo-message-modal').select("input#recipient[type='hidden']")[0].writeAttribute('value', recipient);
+    jQuery(document).on('click', '.plivo-message', function() {
+        var recipient = jQuery(this).data('phone');
+        jQuery('#plivo-message-modal').find("input#recipient[type='hidden']").val(recipient);
         Modalbox.show($('plivo-message-modal'), {title: "Send text message", width: 600});
         return false;
-      });
     });
   });
-
