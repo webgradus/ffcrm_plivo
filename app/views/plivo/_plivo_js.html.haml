@@ -74,7 +74,7 @@
     jQuery(document).on('click', '.plivo-call', function() {
         var dest = jQuery(this).data('phone');
         if (jQuery(this).text() != 'Hangup') {
-          Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.phone}"});
+          Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}"});
         }
         else {
           Plivo.conn.hangup();
