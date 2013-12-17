@@ -7,16 +7,20 @@ class PlivoController < ApplicationController
                 #xml.Play "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
                 xml.Speak "Hello! I'm connecting you with one of our managers." unless params["From"].starts_with?("sip")
                 xml.Dial(:callerId => callerId) {
-                    xml.Number params["To"]
+                    if params["From"].starts_with?("sip")
+                        xml.Number params["To"]
+                    else
+                        xml.User "sip:#{Setting['plivo_endpoint_username']}@phone.plivo.com"
+                    end
                 }
             }
         end
         if params["From"].starts_with?("sip")
-            item = Account.find_by_phone(params["To"]) || Contact.find_by_phone(params["To"])
+            item = Account.by_any_phone(params["To"]) || Contact.by_any_phone(params["To"])
             user = User.find_by_phone(params["X-PH-Phone"])
             event_type = "outbound_call"
         else
-            item = Account.find_by_phone(params["From"]) || Contact.find_by_phone(params["From"])
+            item = Account.by_any_phone(params["From"]) || Contact.by_any_phone(params["From"])
             user = User.find_by_phone(params["To"])
             event_type = "inbound_call"
         end
