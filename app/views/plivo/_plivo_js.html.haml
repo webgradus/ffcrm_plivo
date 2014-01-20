@@ -17,7 +17,11 @@
   }
 
   function onCalling() {
+    jQuery(window).bind('beforeunload',function(){
+      return 'Are you sure you want to leave page?'
+    });
     console.log("Plivo calling...");
+    jQuery('#plivo-calling-modal').show();
     jQuery(".plivo-call").text('Hangup');
   }
 
@@ -25,6 +29,8 @@
     console.log("Plivo call failed...");
     jQuery("#flash").text("Can't make a call - " + cause);
     crm.flash('notice', false);
+    jQuery(window).unbind('beforeunload');
+    jQuery('#plivo-calling-modal').hide();
     jQuery(".plivo-call").text('Call');
   }
 
@@ -35,6 +41,7 @@
 
   function onCallTerminated() {
     console.log("Plivo call terminated...");
+    jQuery(window).unbind('beforeunload');
     jQuery(".plivo-call").text('Call');
   }
 
@@ -55,30 +62,43 @@
   }
 
   jQuery(document).ready(function() {
-    Plivo.onWebrtcNotSupported = webrtcNotSupportedAlert;
-    Plivo.onReady = onReady;
-    Plivo.onLogin = onLogin;
-    Plivo.onLoginFailed = onLoginFailed;
-    Plivo.onCalling = onCalling;
-    Plivo.onCallFailed = onCallFailed;
-    Plivo.onCallAnswered = onCallAnswered;
-    Plivo.onCallTerminated = onCallTerminated;
-    Plivo.onMediaPermission = onMediaPermission;
-    Plivo.onIncomingCall = onIncomingCall;
-    Plivo.setRingTone(true);
-    Plivo.init({debug: true});
-    var username = "#{ Setting['plivo_endpoint_username'] }";
-    var pass = "#{ Setting['plivo_endpoint_password'] }";
-    Plivo.conn.login(username, pass);
+
 
     jQuery(document).on('click', '.plivo-call', function() {
+
+
+      if (jQuery(this).text() != 'Hangup') {
+
+        if (Plivo.conn == undefined){
+          Plivo.onWebrtcNotSupported = webrtcNotSupportedAlert;
+          Plivo.onReady = onReady;
+          Plivo.onLogin = onLogin;
+          Plivo.onLoginFailed = onLoginFailed;
+          Plivo.onCalling = onCalling;
+          Plivo.onCallFailed = onCallFailed;
+          Plivo.onCallAnswered = onCallAnswered;
+          Plivo.onCallTerminated = onCallTerminated;
+          Plivo.onMediaPermission = onMediaPermission;
+          Plivo.onIncomingCall = onIncomingCall;
+          Plivo.setRingTone(true);
+          Plivo.init({debug: true});
+          var username = "#{ Setting['plivo_endpoint_username'] }";
+          var pass = "#{ Setting['plivo_endpoint_password'] }";
+          Plivo.conn.login(username, pass);
+        }
+
         var dest = jQuery(this).data('phone');
-        if (jQuery(this).text() != 'Hangup') {
           Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}"});
+
+          jQuery(window).unload(function(){
+            Plivo.conn.hangup();
+          });
         }
         else {
           Plivo.conn.hangup();
+          jQuery(window).unbind('beforeunload');
           jQuery(this).text('Call');
+
         }
         return false;
     });
@@ -87,5 +107,13 @@
         jQuery('#plivo-message-modal').find("input#recipient[type='hidden']").val(recipient);
         Modalbox.show($('plivo-message-modal'), {title: "Send text message", width: 600});
         return false;
+    });
+
+    jQuery(document).on('click', '.plivo-call-hangup',function(){
+      jQuery('.plivo-call').text('Call');
+      Plivo.conn.hangup();
+      jQuery(window).unbind('beforeunload');
+      jQuery('#plivo-calling-modal').hide();
+      return false;
     });
   });
