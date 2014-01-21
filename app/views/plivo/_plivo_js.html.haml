@@ -3,7 +3,7 @@
   function webrtcNotSupportedAlert() {
     alert("Your browser doesn't support WebRTC. You need Chrome 25 to use this");
   }
-
+  var permission = false;
   function onReady() {
     console.log("Plivo ready...");
   }
@@ -55,11 +55,14 @@
   }
 
   function onMediaPermission(result) {
-    if (result) {
-      console.log("get media permission");
-      setTimeout(function(){make_call()}, 3000);
-    } else {
-      alert("you don't allow media permission, you will can't make a call until you allow it");
+    if(!permission){
+      if (result) {
+        permission = true;
+        console.log("get media permission");
+        setTimeout(function(){make_call()}, 3000);
+      } else {
+        alert("you don't allow media permission, you will can't make a call until you allow it");
+      }
     }
   }
 
@@ -97,20 +100,20 @@
           var username = "#{ Setting['plivo_endpoint_username'] }";
           var pass = "#{ Setting['plivo_endpoint_password'] }";
           Plivo.conn.login(username, pass);
+
         }
         else {
           make_call();
         }
 
 
-        }
-        else {
-          Plivo.conn.hangup();
-          jQuery('#plivo-calling-modal').hide();
-          jQuery(window).unbind('beforeunload');
-          jQuery(this).text('Call');
-
-        }
+      }
+      else {
+        Plivo.conn.hangup();
+        jQuery('#plivo-calling-modal').hide();
+        jQuery(window).unbind('beforeunload');
+        jQuery(this).text('Call');
+      }
         return false;
     });
     jQuery(document).on('click', '.plivo-message', function() {
