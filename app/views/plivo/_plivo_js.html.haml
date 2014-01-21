@@ -45,9 +45,19 @@
     jQuery(".plivo-call").text('Call');
   }
 
+  function make_call(){
+    var dest = jQuery('.plivo-call').data('phone');
+    Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}"});
+
+    jQuery(window).unload(function(){
+      Plivo.conn.hangup();
+    });
+  }
+
   function onMediaPermission(result) {
     if (result) {
       console.log("get media permission");
+      setTimeout(function(){make_call()}, 3000);
     } else {
       alert("you don't allow media permission, you will can't make a call until you allow it");
     }
@@ -60,6 +70,8 @@
       console.log("key="+key+".val="+extraHeaders[key]);
     }
   }
+
+
 
   jQuery(document).ready(function() {
 
@@ -86,16 +98,15 @@
           var pass = "#{ Setting['plivo_endpoint_password'] }";
           Plivo.conn.login(username, pass);
         }
+        else {
+          make_call();
+        }
 
-        var dest = jQuery(this).data('phone');
-          Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}"});
 
-          jQuery(window).unload(function(){
-            Plivo.conn.hangup();
-          });
         }
         else {
           Plivo.conn.hangup();
+          jQuery('#plivo-calling-modal').hide();
           jQuery(window).unbind('beforeunload');
           jQuery(this).text('Call');
 
