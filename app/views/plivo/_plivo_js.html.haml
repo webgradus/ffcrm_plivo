@@ -74,7 +74,28 @@
     }
   }
 
+  function hangup() {
+      jQuery('.plivo-call').text('Call');
+      Plivo.conn.hangup();
+      jQuery(window).unbind('beforeunload');
+      jQuery('#plivo-calling-modal').hide();
+  }
 
+  function mute() {
+    Plivo.conn.mute();
+    jQuery('#linkUnmute').show('slow');
+    jQuery('#linkMute').hide('slow');
+  }
+
+  function unmute() {
+    Plivo.conn.unmute();
+    jQuery('#linkUnmute').hide('slow');
+    jQuery('#linkMute').show('slow');
+  }
+  function dtmf(digit) {
+    console.log("send dtmf="+digit);
+    Plivo.conn.send_dtmf(digit);
+  }
 
   jQuery(document).ready(function() {
 
