@@ -4,6 +4,7 @@
     alert("Your browser doesn't support WebRTC. You need Chrome 25 to use this");
   }
   var permission = false;
+  var button;
   function onReady() {
     console.log("Plivo ready...");
   }
@@ -22,7 +23,7 @@
     });
     console.log("Plivo calling...");
     jQuery('#plivo-calling-modal').show();
-    jQuery(".plivo-call").text('Hangup');
+    jQuery(button).text('Hangup');
   }
 
   function onCallFailed(cause) {
@@ -31,22 +32,22 @@
     crm.flash('notice', false);
     jQuery(window).unbind('beforeunload');
     jQuery('#plivo-calling-modal').hide();
-    jQuery(".plivo-call").text('Call');
+    jQuery(button).text('Call');
   }
 
   function onCallAnswered() {
     console.log("Plivo call answered...");
-    jQuery(".plivo-call").text('Hangup');
+    jQuery(button).text('Hangup');
   }
 
   function onCallTerminated() {
     console.log("Plivo call terminated...");
     jQuery(window).unbind('beforeunload');
-    jQuery(".plivo-call").text('Call');
+    jQuery(button).text('Call');
   }
 
   function make_call(){
-    var dest = jQuery('.plivo-call').data('phone');
+    var dest = jQuery(button).data('phone');
     Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}"});
 
     jQuery(window).unload(function(){
@@ -75,7 +76,7 @@
   }
 
   function hangup() {
-      jQuery('.plivo-call').text('Call');
+      jQuery(button).text('Call');
       Plivo.conn.hangup();
       jQuery(window).unbind('beforeunload');
       jQuery('#plivo-calling-modal').hide();
@@ -102,6 +103,7 @@
 
     jQuery(document).on('click', '.plivo-call', function() {
 
+      button = this;
 
       if (jQuery(this).text() != 'Hangup') {
 
@@ -133,13 +135,17 @@
         Plivo.conn.hangup();
         jQuery('#plivo-calling-modal').hide();
         jQuery(window).unbind('beforeunload');
-        jQuery(this).text('Call');
+        jQuery(button).text('Call');
       }
         return false;
     });
     jQuery(document).on('click', '.plivo-message', function() {
         var recipient = jQuery(this).data('phone');
+        var recipient_id = jQuery(this).data('id');
+        var recipient_type = jQuery(this).data('type');
         jQuery('#plivo-message-modal').find("input#recipient[type='hidden']").val(recipient);
+        jQuery('#plivo-message-modal').find("input#recipient_id[type='hidden']").val(recipient_id);
+        jQuery('#plivo-message-modal').find("input#recipient_type[type='hidden']").val(recipient_type);
         Modalbox.show($('plivo-message-modal'), {title: "Send text message", width: 600});
         return false;
     });
