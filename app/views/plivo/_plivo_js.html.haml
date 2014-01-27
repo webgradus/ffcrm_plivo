@@ -47,7 +47,7 @@
   }
 
   function make_call(){
-    var dest = jQuery(button).data('phone');
+    var dest = jQuery(button).data('phone').toString();
     Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}"});
 
     jQuery(window).unload(function(){
