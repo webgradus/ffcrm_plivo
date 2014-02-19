@@ -1,0 +1,18 @@
+.title Choose Destination
+= form_tag(admin_plivo_index_path) do
+  =hidden_field_tag "plivo_number[phoneable_type]", "User"
+  =hidden_field_tag "group_id", params[:group_id]
+  .section
+    %table
+      %tbody
+        %tr
+          %td
+            = label_tag :label
+            = text_field_tag "plivo_number[label]", nil, placeholder: "Enter label name", required: true
+        %tr
+          %td
+            = label_tag :phoneable
+            = select_tag "plivo_number[phoneable_id]", options_from_collection_for_select(@users, "id", "full_name")
+        %tr
+          %td
+            =submit_tag "Create"

@@ -1,0 +1,21 @@
+.title Show plivo number
+=form_tag
+  .section
+    %table
+      %tbody
+        %tr
+          %td
+            =f.label :number
+            =f.text_field_tag :number, disabled: true
+        %tr
+          %td
+            =f.label :label
+            =f.text_field :label, required: true
+        %tr
+          %td
+            =f.label :phoneable
+            =f.select :phoneable_id, User.all.map{|u| [u.full_name, u.id]}
+        %tr
+          %td
+            =f.submit "Save"
+            =link_to "Cancel", :back

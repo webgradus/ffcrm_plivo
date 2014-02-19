@@ -1,0 +1,25 @@
+.title_tools
+  = link_to(arrow_for(:create_plivo_number) + "Create plivo number", new_admin_plivo_path)
+  -unless @plivo_numbers.empty?
+    |
+    = link_to("Check actual numbers",   check_actual_numbers_admin_plivo_index_path)
+
+.title
+  Plivo numbers
+-if @plivo_numbers.empty?
+  Couldn't find any Plivo Numbers. Feel free to
+  =link_to 'create a new plivo number.', new_admin_plivo_path
+-else
+  .list
+    - @plivo_numbers.each do |number|
+      %li.highlight
+        %ul.tools
+          %li
+            =link_to 'Edit', edit_admin_plivo_path(number)
+          %li
+            =link_to 'Delete!', admin_plivo_path(number), method: :delete, confirmation: "Are you sure?"
+        .identslim
+          =link_to number.label+'('+number.number+')' ,admin_plivo_path(number)
+          %tt
+            at
+            =link_to number.phoneable.full_name, polymorphic_path(number.phoneable)

@@ -1,0 +1,12 @@
+jQuery('#loading').hide();
+<% if @resp.first == 200 %>
+  <% unless @groups.empty? %>
+    jQuery('#results').html("<div class='title'>Results</div><ul id='search_results'><% @groups.each do |gp| %><%=j render 'group', group: gp%><% end %></ul>");
+  <% else %>
+    $('flash').update("Sorry, we could not find any numbers for this search.");
+    crm.flash('error', false);
+  <% end %>
+<% else %>
+  $('flash').update("Something went wrong!");
+  crm.flash('error', false);
+<% end %>

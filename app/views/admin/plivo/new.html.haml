@@ -1,0 +1,45 @@
+.title
+  %span
+    Creating new plivo number
+  = image_tag("loading.gif", :size => :thumb, :id => "loading", :style => "display: none;")
+
+= form_tag(search_admin_plivo_index_path, remote: true) do
+  = hidden_field_tag "search[country_iso]", "US"
+  = hidden_field_tag "search[country_code]", "1"
+
+  .section
+    %table
+      %tbody
+        %tr
+          %td
+            Number type
+          %td
+            .radio_box
+              = radio_button_tag "search[number_type]", "local", true
+              = label_tag :local
+            .radio_box
+              = radio_button_tag "search[number_type]", "tollfree", false
+              = label_tag :tollfree
+        %tr#search_prefix
+          %td
+            Search
+          %td
+            = text_field_tag "search[area_code]", nil, placeholder: "prefix or area"
+        %tr#search_services
+          %td
+          %td
+            .check_box
+              = check_box_tag "search[services]", "voice,sms"
+              SMS Enable
+        %tr
+          %td{colspan:2}
+            = submit_tag "Search", id: 'search_button'
+:javascript
+  jQuery(document).ready(function(){
+    jQuery('#search_button').click(function(){
+      jQuery('#loading').show();
+    });
+  });
+
+
+#results.list

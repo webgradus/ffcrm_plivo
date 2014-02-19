@@ -1,0 +1,59 @@
+%li.highlight
+  %ul.tools
+    %li
+      = link_to "Buy!", destination_admin_plivo_index_path(group_id: group["group_id"])
+  .identslim
+    %dt
+      %table.asset_attributes
+        %tbody
+          %tr
+            %th
+              Area Code:
+            %td
+              = group["prefix"]
+            %th
+            %td
+          %tr
+            %th
+              In Stock:
+            %td
+              = group["stock"]
+            %th
+            %td
+          %tr
+            %th
+              Region:
+            %td
+              = group["region"]
+            %th
+            %td
+    %dt
+      %table.asset_attributes
+        %tbody
+          %tr
+            %th
+              Voice:
+            %td
+              = (group["voice_rate"].to_f*100).round(5)
+              ¢
+            %th
+              Setup:
+            %td
+              $
+              = group["setup_rate"].to_f.round(5)
+          %tr
+            %th
+              -if group["number_type"] == "local"
+                SMS:
+            %td
+              -if group["number_type"] == "local"
+                = (group["sms_rate"].to_f*100).round(5)
+                ¢
+            %th
+              Monthly:
+            %td
+              $
+              = group["rental_rate"].to_f.round(5)
+
+
+

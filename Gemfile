@@ -8,7 +8,7 @@ gemspec
 # jquery-rails is used by the dummy application
 gem "jquery-rails", '~> 2.1.4'
 gem 'fat_free_crm', :git => 'git://github.com/fatfreecrm/fat_free_crm.git'
-
+gem 'plivo'
 # Declare any dependencies that are still in development here instead of in
 # your gemspec. These might include edge Rails or gems from your path or
 # Git. Remember to move these dependencies to your gemspec before releasing
