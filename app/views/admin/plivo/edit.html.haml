@@ -13,9 +13,31 @@
             =f.text_field :label, required: true
         %tr
           %td
+            =f.label :phoneable_type
+            .radio_box
+              = f.radio_button :phoneable_type, "User"
+              = f.label "User"
+            .radio_box
+              = f.radio_button :phoneable_type, "Group"
+              = f.label "Group"
+        %tr
+          %td
             =f.label :phoneable
-            =f.select :phoneable_id, User.all.map{|u| [u.full_name, u.id]}
+            -if @plivo_number.phoneable.class == User
+              =f.select :phoneable_id, User.all.map{|u| [u.full_name, u.id]}
+            -else
+              =f.select :phoneable_id, Group.all.map{|u| [u.full_name, u.id]}
         %tr
           %td
             =f.submit "Save"
             =link_to "Cancel", admin_plivo_index_path
+        :javascript
+          jQuery(document).ready(function(){
+            jQuery('#plivo_number_phoneable_type_user').click(function(){
+              jQuery("#plivo_number_phoneable_id").replaceWith('#{ j f.select :phoneable_id,  User.all.map{|u| [u.full_name, u.id]}}');
+            });
+            jQuery('#plivo_number_phoneable_type_group').click(function(){
+              jQuery("#plivo_number_phoneable_id").replaceWith('#{ j f.select :phoneable_id,  Group.all.map{|u| [u.full_name, u.id]}}');
+            });
+          })
+
