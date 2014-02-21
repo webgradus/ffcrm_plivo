@@ -7,3 +7,7 @@ jQuery ($) ->
     jQuery('#search_services').show()
     jQuery('#search_prefix td').first().html("Search")
     jQuery('#search_prefix td').last().html('<input id="search_area_code" name="search[area_code]" placeholder="prefix or area" type="text">')
+
+
+  jQuery('#plivo_number_number_type_User').click ->
+

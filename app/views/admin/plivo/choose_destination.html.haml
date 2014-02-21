@@ -1,6 +1,5 @@
 .title Choose Destination
 = form_tag(admin_plivo_index_path) do
-  =hidden_field_tag "plivo_number[phoneable_type]", "User"
   =hidden_field_tag "group_id", params[:group_id]
   .section
     %table
@@ -11,8 +10,27 @@
             = text_field_tag "plivo_number[label]", nil, placeholder: "Enter label name", required: true
         %tr
           %td
+            =label_tag :phoneable_type
+            .radio_box
+              = radio_button_tag "plivo_number[phoneable_type]", "User", true
+              = label_tag "User"
+            .radio_box
+              = radio_button_tag "plivo_number[phoneable_type]", "Group", false
+              = label_tag "Group"
+        %tr#select_destination
+          %td
             = label_tag :phoneable
             = select_tag "plivo_number[phoneable_id]", options_from_collection_for_select(@users, "id", "full_name")
         %tr
           %td
             =submit_tag "Create"
+
+:javascript
+  jQuery(document).ready(function(){
+    jQuery('#plivo_number_phoneable_type_User').click(function(){
+      jQuery("#plivo_number_phoneable_id").replaceWith('#{ j select_tag "plivo_number[phoneable_id]", options_from_collection_for_select(@users, "id", "full_name") }');
+    });
+    jQuery('#plivo_number_phoneable_type_Group').click(function(){
+      jQuery("#plivo_number_phoneable_id").replaceWith('#{ j select_tag "plivo_number[phoneable_id]", options_from_collection_for_select(@group, "id", "name") }');
+    });
+  })

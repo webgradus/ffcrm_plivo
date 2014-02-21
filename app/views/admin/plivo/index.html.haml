@@ -22,4 +22,4 @@
           =link_to number.label+'('+number.number+')' ,edit_admin_plivo_path(number)
           %tt
             at
-            =link_to number.phoneable.full_name, polymorphic_path(number.phoneable)
+            =link_to number.phoneable.full_name, polymorphic_url([:admin,number.phoneable])
