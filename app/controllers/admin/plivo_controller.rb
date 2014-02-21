@@ -35,10 +35,10 @@ class Admin::PlivoController < Admin::ApplicationController
   def create
     debugger
     p = Plivo::RestAPI.new(Setting['plivo_auth_id'], Setting['plivo_auth_token'])
-    #resp = p.rent_from_number_group('group_id' => params[:group_id], 'app_id' => Setting['plivo_app_id'])
+    resp = p.rent_from_number_group('group_id' => params[:group_id], 'app_id' => Setting['plivo_app_id'])
 
     #For debug
-    resp=[201,{"numbers" => [{"number" => 123}]}]
+    #resp=[201,{"numbers" => [{"number" => 123}]}]
 
     if resp.first == 201
       number = resp.second["numbers"].first["number"]
