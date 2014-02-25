@@ -5,17 +5,29 @@
       %tbody
         %tr
           %td
-            =f.label :number
+            %div{:class => 'label top'}
+              Number
             =f.text_field :number, disabled: true
         %tr
           %td
-            =f.label :label
+            %div{:class => 'label top'}
+              Label
             =f.text_field :label, required: true
         %tr
           %td
-            =f.label :phoneable
-            =f.select :phoneable_id, User.all.map{|u| [u.full_name, u.id]}
+            %div{:class => 'label top'}
+              User
+            = select_tag "user_ids", options_from_collection_for_select(User.all, "id", "full_name",@users), multiple: true, 'data-placeholder' => 'Choose users'
+        %tr
+          %td
+            %div{:class => 'label top'}
+              Group
+            = select_tag "group_ids", options_from_collection_for_select(Group.all, "id", "full_name", @groups), multiple: true, 'data-placeholder' => 'Choose groups'
         %tr
           %td
             =f.submit "Save"
             =link_to "Cancel", admin_plivo_index_path
+    :javascript
+      new Chosen($('user_ids'))
+      new Chosen($('group_ids'))
+

@@ -6,6 +6,7 @@ class Admin::PlivoController < Admin::ApplicationController
 
     @plivo_numbers = PlivoNumber.all
     #TODO check numbers. maybe delete from plivo admin
+    #exist special button on index page
   end
   def new
   end
@@ -29,11 +30,8 @@ class Admin::PlivoController < Admin::ApplicationController
 
   end
   def choose_destination
-    @users = User.all - User.joins(:plivo_number)
-    @group = Group.all - Group.joins(:plivo_number)
   end
   def create
-    debugger
     p = Plivo::RestAPI.new(Setting['plivo_auth_id'], Setting['plivo_auth_token'])
     resp = p.rent_from_number_group('group_id' => params[:group_id], 'app_id' => Setting['plivo_app_id'])
 
@@ -43,7 +41,22 @@ class Admin::PlivoController < Admin::ApplicationController
     if resp.first == 201
       number = resp.second["numbers"].first["number"]
       params[:plivo_number][:number] = number
+
+
+
       @plivo_number = PlivoNumber.create(params[:plivo_number])
+
+      params[:group_ids].each do |group_id|
+        group = Group.find_by_id(group_id)
+        group.plivo_numbers << @plivo_number if group
+      end
+
+
+      params[:user_ids].each do |user_id|
+        user = User.find_by_id(user_id)
+        user.plivo_numbers << @plivo_number if user
+      end
+
       redirect_to edit_admin_plivo_path(@plivo_number)
     else
       redirect_to destination_admin_plivo_index_path(group_id: params[:group_id]), flash: {error: 'Something went wrong!'}
@@ -51,10 +64,33 @@ class Admin::PlivoController < Admin::ApplicationController
   end
   def edit
     @plivo_number = PlivoNumber.find_by_id(params[:id])
+    @users = @plivo_number.number_attachements.select {|na|  na.phoneable_type == "User"}.map {|p| p.phoneable_id}
+    @groups = @plivo_number.number_attachements.select {|na|  na.phoneable_type == "Group"}.map {|p| p.phoneable_id}
   end
   def update
     @plivo_number = PlivoNumber.find_by_id(params[:id])
     @plivo_number.update_attributes(params[:plivo_number])
+
+    (params[:group_ids] || []).each do |group_id|
+      group = Group.find_by_id(group_id)
+      group.plivo_numbers << @plivo_number if group and not group.plivo_numbers.include?(@plivo_number)
+    end
+    @plivo_number.groups.each do |group|
+      unless (params[:group_ids] || []).include?(group.id.to_s)
+        group.number_attachements.where(plivo_number_id: @plivo_number.id).first.destroy
+      end
+    end
+
+
+    (params[:user_ids] || []).each do |user_id|
+      user = User.find_by_id(user_id)
+      user.plivo_numbers << @plivo_number if user and not user.plivo_numbers.include?(@plivo_number)
+    end
+    @plivo_number.users.each do |user|
+      unless (params[:user_ids] || []).include?(user.id.to_s)
+        user.number_attachements.where(plivo_number_id: @plivo_number.id).first.destroy
+      end
+    end
   end
 
   def destroy

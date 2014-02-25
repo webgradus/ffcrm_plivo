@@ -6,31 +6,23 @@
       %tbody
         %tr
           %td
-            = label_tag :label
+            %div{:class => 'top label'}
+              Label
             = text_field_tag "plivo_number[label]", nil, placeholder: "Enter label name", required: true
         %tr
           %td
-            =label_tag :phoneable_type
-            .radio_box
-              = radio_button_tag "plivo_number[phoneable_type]", "User", true
-              = label_tag "User"
-            .radio_box
-              = radio_button_tag "plivo_number[phoneable_type]", "Group", false
-              = label_tag "Group"
-        %tr#select_destination
+            %div{:class => 'top label'}
+              User
+            = select_tag "user_ids", options_from_collection_for_select(User.all, "id", "full_name"), multiple: true, 'data-placeholder' => 'Choose users'
+        %tr
           %td
-            = label_tag :phoneable
-            = select_tag "plivo_number[phoneable_id]", options_from_collection_for_select(@users, "id", "full_name")
+            %div{:class => 'top label'}
+              Group
+            = select_tag "group_ids", options_from_collection_for_select(Group.all, "id", "full_name"), multiple: true, 'data-placeholder' => 'Choose groups'
         %tr
           %td
             =submit_tag "Create"
+    :javascript
+      new Chosen($('user_ids'))
+      new Chosen($('group_ids'))
 
-:javascript
-  jQuery(document).ready(function(){
-    jQuery('#plivo_number_phoneable_type_User').click(function(){
-      jQuery("#plivo_number_phoneable_id").replaceWith('#{ j select_tag "plivo_number[phoneable_id]", options_from_collection_for_select(@users, "id", "full_name") }');
-    });
-    jQuery('#plivo_number_phoneable_type_Group').click(function(){
-      jQuery("#plivo_number_phoneable_id").replaceWith('#{ j select_tag "plivo_number[phoneable_id]", options_from_collection_for_select(@group, "id", "name") }');
-    });
-  })

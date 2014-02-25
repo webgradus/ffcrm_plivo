@@ -20,6 +20,3 @@
             =link_to 'Delete!', admin_plivo_path(number), method: :delete, confirmation: "Are you sure?"
         .identslim
           =link_to number.label+'('+number.number+')' ,edit_admin_plivo_path(number)
-          %tt
-            at
-            =link_to number.phoneable.full_name, polymorphic_url([:admin,number.phoneable])
