@@ -198,3 +198,4 @@ DEPENDENCIES
   ffcrm_plivo!
   jquery-rails (~> 2.1.4)
   pg
+  plivo
