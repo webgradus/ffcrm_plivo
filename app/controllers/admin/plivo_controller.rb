@@ -46,13 +46,13 @@ class Admin::PlivoController < Admin::ApplicationController
 
       @plivo_number = PlivoNumber.create(params[:plivo_number])
 
-      params[:group_ids].each do |group_id|
+      (params[:group_ids] || []).each do |group_id|
         group = Group.find_by_id(group_id)
         group.plivo_numbers << @plivo_number if group
       end
 
 
-      params[:user_ids].each do |user_id|
+      (params[:user_ids] || []).each do |user_id|
         user = User.find_by_id(user_id)
         user.plivo_numbers << @plivo_number if user
       end
