@@ -15,6 +15,14 @@
             =f.text_field :label, required: true
         %tr
           %td
+            %div{:class => 'top label'}
+              Business time
+            = f.time_select :start_time, {include_seconds: false, ampm: true}, class: 'time'
+            %br
+            = f.time_select :end_time, {include_seconds: false, ampm: true}, class: 'time'
+            = f.time_zone_select :business_time_zone, nil, default: Time.zone.name
+        %tr
+          %td
             %div{:class => 'label top'}
               User
             = select_tag "user_ids", options_from_collection_for_select(User.all, "id", "full_name",@users), multiple: true, 'data-placeholder' => 'Choose users'

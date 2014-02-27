@@ -1,11 +1,15 @@
 class PlivoController < ApplicationController
   def answer
     #puts params
-    if params[:business_time]
-      business_time = false
-    else
-      business_time = true
-    end# TODO check business time or not
+    business_time = true
+    if not params["From"].starts_with?("sip")
+      number = PlivoNumber.find_by_number(params["To"])
+      if number and number.business_time?
+        business_time = true
+      else
+        business_time = false
+      end
+    end
     if not params["From"].starts_with?("sip") and not business_time
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.Response {

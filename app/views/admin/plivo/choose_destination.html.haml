@@ -12,6 +12,14 @@
         %tr
           %td
             %div{:class => 'top label'}
+              Business time
+            = time_select "plivo_number","start_time", {include_seconds: false, ampm: true, :default => {hour: '8', minute: '00'}}, class: 'time'
+            %br
+            = time_select "plivo_number","end_time", {include_seconds: false, ampm: true, :default => {hour: '20', minute: '00'}}, class: 'time'
+            = time_zone_select "plivo_number", "business_time_zone", nil, default: Time.zone.name
+        %tr
+          %td
+            %div{:class => 'top label'}
               User
             = select_tag "user_ids", options_from_collection_for_select(User.all, "id", "full_name"), multiple: true, 'data-placeholder' => 'Choose users'
         %tr
