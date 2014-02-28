@@ -10,9 +10,10 @@ class PlivoNumber < ActiveRecord::Base
   end
 
   def business_time?
-    time_now = Time.use_zone(self.business_time_zone){Time.now}.localtime.change(day: 1, month: 1, year: 2000)
-    start_time = Time.use_zone(self.business_time_zone){Time.zone.local_to_utc(self.start_time)}.localtime
-    end_time = Time.use_zone(self.business_time_zone){Time.zone.local_to_utc(self.end_time)}.localtime
+    time_now = Time.now.change(day: 1, month: 1, year: 2000)
+    offset = ActiveSupport::TimeZone.new(self.business_time_zone).utc_offset()
+    start_time = self.start_time - offset
+    end_time = self.end_time - offset
     if  start_time < time_now and time_now < end_time
       true
     else
