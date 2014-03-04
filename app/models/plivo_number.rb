@@ -1,7 +1,9 @@
 class PlivoNumber < ActiveRecord::Base
-  attr_accessible :number, :label, :start_time, :end_time, :business_time_zone
+  attr_accessible :number, :label, :start_time, :end_time, :business_time_zone, :tag_list
   has_many :number_attachements, uniq: true
   has_many :voice_mails
+  acts_as_taggable_on :tags
+  has_ransackable_associations %w(tags)
   def users
     User.joins(:plivo_numbers).where("plivo_number_id = ?", self.id).uniq
   end

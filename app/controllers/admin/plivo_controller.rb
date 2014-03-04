@@ -30,10 +30,12 @@ class Admin::PlivoController < Admin::ApplicationController
 
   end
   def choose_destination
+    @plivo_number = PlivoNumber.new
   end
   def create
     p = Plivo::RestAPI.new(Setting['plivo_auth_id'], Setting['plivo_auth_token'])
     resp = p.rent_from_number_group('group_id' => params[:group_id], 'app_id' => Setting['plivo_app_id'])
+
 
     #For debug
     #resp=[201,{"numbers" => [{"number" => 123}]}]
@@ -41,8 +43,6 @@ class Admin::PlivoController < Admin::ApplicationController
     if resp.first == 201
       number = resp.second["numbers"].first["number"]
       params[:plivo_number][:number] = number
-
-
 
       @plivo_number = PlivoNumber.create(params[:plivo_number])
 
@@ -117,6 +117,16 @@ class Admin::PlivoController < Admin::ApplicationController
       end
     end
     redirect_to admin_plivo_index_path, flash: {notice: "#{count} numbers were deleted!"}
+  end
+
+  def field_group
+    if @tag = Tag.find_by_name(params[:tag].strip)
+      if @field_group = FieldGroup.find_by_tag_id_and_klass_name(@tag.id, klass.to_s)
+        @asset = klass.find_by_id(params[:asset_id]) || klass.new
+        render 'fields/group' and return
+      end
+    end
+    render :text => ''
   end
 
 end
