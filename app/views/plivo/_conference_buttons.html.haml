@@ -1,0 +1,10 @@
+-current_user.numbers.each do |numb|
+  %li#phone-button-answer.phone-button.medium.on-incoming{:data => { conference: numb.number.to_s }}
+    Answer
+  %li#phone-button-reject.phone-button.medium.on-incoming{:data => { conference: numb.number.to_s }}
+    Reject
+
+  %li#phone-button-hold.phone-button.medium.on-call{:data => { conference: numb.number.to_s }}
+    Hold
+  %li#phone-button-hangup.phone-button.medium.on-call(onclick="hangup();"){:data => { conference: numb.number.to_s }}
+    Hangup

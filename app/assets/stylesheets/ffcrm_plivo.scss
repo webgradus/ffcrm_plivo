@@ -127,3 +127,198 @@
     transition: background-position .1s linear
   }
 
+
+
+#phonebook {
+
+  section {
+    width: 18rem;
+  }
+
+  .phone-button {
+    display: inline-block;
+    background-color: #fff;
+    width: 5rem;
+    font-size: 16px;
+    line-height: 3rem;
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0.25rem;
+    text-indent: 1rem;
+    position: relative;
+  }
+  ul {
+    overflow-y: auto;
+    max-height: 350px;
+    padding: 0;
+    margin: 0;
+  }
+  .phone-button > aside {
+    position: absolute;
+    line-height: 1rem;
+    top: 1rem;
+    right: 1rem;
+    color: #aaa;
+    text-transform: uppercase;
+    font-size: 0.5rem;
+  }
+  #phone-input {
+    width: 17rem;
+    height: 46px!important;
+    margin: 0.5rem 0;
+    box-sizing: border-box;
+    border: 1px solid #aaa;
+    padding: .5rem;
+    text-align: right;
+    font-size: 1.5rem;
+  }
+  .phone-button.large {
+    width: 16.5rem;
+  }
+  #phone-button-call {
+    text-align: center;
+    text-indent: 0;
+    background-color: #0a0;
+    color: white;
+  }
+  .phone-button.medium {
+    text-indent: 0;
+    text-align: center;
+    width: 7.85rem;
+  }
+  #phone-button-hold {
+    background-color: #ec0;
+    color: white;
+  }
+
+  #phone-button-answer {
+    background-color: #0a0;
+    color: white;
+  }
+  #phone-button-answer:hover {
+    background-color: #0d0;
+  }
+  #phone-button-hangup, #phone-button-reject {
+    background-color: #900;
+    color: white;
+  }
+  .phone-button:hover {
+    cursor: pointer;
+    background-color: aliceblue;
+  }
+  #phone-button-call:hover {
+    background-color: #0d0;
+  }
+  #phone-button-hold:hover {
+    background-color: #fd0;
+  }
+  #phone-button-hangup:hover, #phone-button-reject:hover {
+    background-color: #b00;
+  }
+  #replist > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-indent: 0;
+  }
+  #replist > ul > li {
+    box-sizing: border-box;
+    padding: 1rem;
+    background-color: #fff;
+    margin: 0.25rem;
+    position: relative;
+  }
+  #replist > ul > li:before {
+    content: " ";
+    background-color: #999;
+    width: 0.5rem;
+    height: 0.5rem;
+    display: inline-block;
+    margin: 0.25rem 0.5rem 0.25rem 0;
+    float: left;
+    border-radius: 1rem;
+  }
+  #replist > ul > li > aside:before { content: "unknown"; }
+  #replist > ul > li > aside {
+    font-size: 0.5rem;
+    text-transform: uppercase;
+    color: #999;
+    position: absolute;
+    top: 2.25rem;
+  }
+
+  #replist > ul > li.busy > aside:before { content: "busy"; }
+  #replist > ul > li.away > aside:before { content: "away"; }
+  #replist > ul > li.online > aside:before { content: "online"; }
+  #replist > ul > li.offline > aside:before { content: "offline"; }
+
+  #replist > ul > li.offline::before { background-color: #c00; }
+  #replist > ul > li.away::before { background-color: #fc0; }
+  #replist > ul > li.busy::before { background-color: #fc0; }
+  #replist > ul > li.online::before { background-color: #0c0; }
+
+  #replist > ul > li > section {
+    position:relative;
+    height: 0px;
+    overflow-y: scroll;
+    margin:0.25rem 0 0;
+    transition: height 0.2s;
+  }
+
+  #replist > ul > li > section > textarea {
+    margin: 0;
+    width: 100%;
+    border-width: 1px 0;
+    border-color: #ddd;
+    height: 1.5rem;
+    padding: 0.25rem;
+    box-sizing: border-box;
+  }
+  #replist > ul > li > section > textarea:focus {
+    height: 5rem;
+  }
+  #replist > ul > li.open > section {
+    border: 1px solid #ddd;
+    margin:1rem 0 0;
+    height: 12rem;
+  }
+  .repcallbutton, .repconnectbutton {
+    position: absolute;
+    top: 1.4em;
+    right: 1em;
+    box-sizing: border-box;
+    line-height: 1.5em;
+  }
+  .on-call, .on-incoming {
+    display: none;
+  }
+  #replist > p {
+    text-align: center;
+    font-weight: 900;
+  }
+  #replist {
+    padding: 0.25rem 0.25rem 1rem;
+    box-sizing: border-box;
+  }
+  #phone {
+    padding: 1rem 0.5rem;
+    box-sizing: border-box;
+  }
+  #replist > ul > li:hover {
+    background-color: aliceblue;
+    cursor: pointer;
+  }
+
+  .messagelist > ul > li {
+    border-bottom: 1px solid #999;
+    box-sizing: border-box;
+    padding: 0.5rem;
+  }
+
+  .messagelist > ul > li > aside {
+    float: right;
+    margin: 0.5rem;
+    font-size: 0.5rem;
+    color: #999;
+  }
+}

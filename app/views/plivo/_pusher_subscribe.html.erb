@@ -1,0 +1,6 @@
+<% current_user.numbers.each_with_index do |numb, ind| %>
+  var channel_<%= numb.number.to_s%> = pusher.subscribe('<%= numb.number.to_s%>');
+  channel_<%= numb.number.to_s%>.bind('incoming_conference',inc_conf);
+  channel_<%= numb.number.to_s%>.bind('conference_start',conf_start);
+  channel_<%= numb.number.to_s%>.bind('conference_end',conf_end);
+<% end %>

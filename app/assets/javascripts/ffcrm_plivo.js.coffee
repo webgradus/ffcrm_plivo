@@ -9,5 +9,12 @@ jQuery ($) ->
     jQuery('#search_prefix td').last().html('<input id="search_area_code" name="search[area_code]" placeholder="prefix or area" type="text">')
 
 
-  jQuery('#plivo_number_number_type_User').click ->
+    #jQuery('#plivo_number_number_type_User').click ->
+    #don't remember what is it
 
+  jQuery('#replist p').click ->
+    jQuery('#replist ul').toggle("blind",500)
+
+jQuery ($) ->
+  jQuery('.plivo-call-gen').click ->
+    jQuery.post('/plivo/phone/send', {'phone' : jQuery(this).data('phone')})

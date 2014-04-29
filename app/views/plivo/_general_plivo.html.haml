@@ -1,0 +1,19 @@
+:javascript
+  jQuery(document).ready(function(){
+    jQuery('#{ link_to "Phone", plivo_phone_path, id: "open_phone", target: "_blank" }').insertAfter("#jumper");
+    jQuery('#open_phone').before(' | ');
+    var a = document.getElementById('open_phone');
+    var evt = document.createEvent("MouseEvents");
+    evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, true, false, false, false, 0, null);
+    #{"a.dispatchEvent(evt);" if request.referer and request.referer.include? 'login' }
+  })
+  jQuery(document).on('click', '.plivo-message', function() {
+        var recipient = jQuery(this).data('phone');
+        var recipient_id = jQuery(this).data('id');
+        var recipient_type = jQuery(this).data('type');
+        jQuery('#plivo-message-modal').find("input#recipient[type='hidden']").val(recipient);
+        jQuery('#plivo-message-modal').find("input#recipient_id[type='hidden']").val(recipient_id);
+        jQuery('#plivo-message-modal').find("input#recipient_type[type='hidden']").val(recipient_type);
+        Modalbox.show($('plivo-message-modal'), {title: "Send text message", width: 600});
+        return false;
+    });
