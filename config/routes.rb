@@ -20,5 +20,8 @@ Rails.application.routes.draw do
           get 'check_actual_numbers'
         end
       end
+      get '/plivo_number/field_group' => "plivo#field_group"
     end
+
+
 end

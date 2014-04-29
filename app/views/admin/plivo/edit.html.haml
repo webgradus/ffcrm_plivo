@@ -32,10 +32,15 @@
               Group
             = select_tag "group_ids", options_from_collection_for_select(Group.all, "id", "full_name", @groups), multiple: true, 'data-placeholder' => 'Choose groups'
         %tr
+          %td{ :valign => :top }
+            .label Tags
+            = f.select :tag_list, Tag.all.map{|t| [t.name, t.name] }, {:value => f.object.tags.map{|t| t.name }}, {:multiple => true, :"data-placeholder" => t(:select_or_create_tags), :style => "width: 240px;"}
+        %tr
           %td
             =f.submit "Save"
             =link_to "Cancel", admin_plivo_index_path
     :javascript
+      crm.chosen_taglist('plivo_number', 'admin/plivo_number', '#{params[:id]}');
       new Chosen($('user_ids'))
       new Chosen($('group_ids'))
 

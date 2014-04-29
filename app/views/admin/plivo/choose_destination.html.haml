@@ -1,6 +1,6 @@
 .title Choose Destination
-= form_tag(admin_plivo_index_path) do
-  =hidden_field_tag "group_id", params[:group_id]
+= form_for(@plivo_number, url: '/admin/plivo', method: :post) do |f|
+  = hidden_field_tag "group_id", params[:group_id]
   .section
     %table
       %tbody
@@ -8,15 +8,15 @@
           %td
             %div{:class => 'top label'}
               Label
-            = text_field_tag "plivo_number[label]", nil, placeholder: "Enter label name", required: true
+            = f.text_field :label, placeholder: "Enter label name", required: true
         %tr
           %td
             %div{:class => 'top label'}
               Business time
-            = time_select "plivo_number","start_time", {include_seconds: false, ampm: true, :default => {hour: '8', minute: '00'}}, class: 'time'
+            = f.time_select :start_time, {include_seconds: false, ampm: true, :default => {hour: '8', minute: '00'}}, class: 'time'
             %br
-            = time_select "plivo_number","end_time", {include_seconds: false, ampm: true, :default => {hour: '20', minute: '00'}}, class: 'time'
-            = time_zone_select "plivo_number", "business_time_zone", nil, default: Time.zone.name
+            = f.time_select :end_time, {include_seconds: false, ampm: true, :default => {hour: '20', minute: '00'}}, class: 'time'
+            = f.time_zone_select :business_time_zone, nil, default: Time.zone.name
         %tr
           %td
             %div{:class => 'top label'}
@@ -28,9 +28,14 @@
               Group
             = select_tag "group_ids", options_from_collection_for_select(Group.all, "id", "full_name"), multiple: true, 'data-placeholder' => 'Choose groups'
         %tr
+          %td{ :valign => :top }
+            .label Tags
+            = f.select "tag_list", Tag.all.map{|t| [t.name, t.name] },{}, {:multiple => true, :"data-placeholder" => t(:select_or_create_tags), :style => "width: 240px;"}
+        %tr
           %td
-            =submit_tag "Create"
+            = f.submit "Create"
     :javascript
+      crm.chosen_taglist('plivo_number', 'admin/plivo_number', '#{@plivo_number.id}');
       new Chosen($('user_ids'))
       new Chosen($('group_ids'))
 
