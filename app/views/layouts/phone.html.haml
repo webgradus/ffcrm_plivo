@@ -97,6 +97,7 @@
       var send_number = function(data) {
         if(data.username == "#{current_user.username}"){
           jQuery("#phone-input").val(data.phone_number);
+          jQuery(".off-call").click();
         }
       }
 
