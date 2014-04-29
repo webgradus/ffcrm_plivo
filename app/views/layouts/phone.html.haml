@@ -138,7 +138,7 @@
         }
       }
 
-      var pusher = new Pusher('c6ff66ed1daa1cda9125');
+      var pusher = new Pusher("#{ENV['PUSHER_KEY']}");
       #{ render "pusher_subscribe" }
       var channel = pusher.subscribe("internal");
       channel.bind('call', connect);
