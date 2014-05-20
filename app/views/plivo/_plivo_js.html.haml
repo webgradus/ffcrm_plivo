@@ -58,6 +58,9 @@
 
   function make_call(){
     var dest = jQuery(button).data('phone').toString();
+    if(dest[0]!="1"){
+      dest = "1"+dest;
+    }
     Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}","X-Ph-User": "#{current_user.id}"});
 
     jQuery(window).unload(function(){
@@ -144,6 +147,9 @@
 
   function call() {
     var dest = jQuery('#phone-input').val();
+    if(dest[0]!="1"){
+      dest = "1"+dest;
+    }
     if(dest.length>0){
       Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-Outbound": "true", "X-Ph-User": "#{current_user.try(:id)}"});
       jQuery('.connect_user').remove();

@@ -1,6 +1,6 @@
 :javascript
   jQuery(document).ready(function(){
-    jQuery('#{ link_to "Phone", plivo_phone_path, id: "open_phone", target: "_blank" }').insertAfter("#jumper");
+    jQuery('#{ link_to "Phone", '#', id: "open_phone", onclick: "window.open('#{plivo_phone_path}', 'phone','width=200'); return false;" }').insertAfter("#jumper");
     jQuery('#open_phone').before(' | ');
     var a = document.getElementById('open_phone');
     var evt = document.createEvent("MouseEvents");
