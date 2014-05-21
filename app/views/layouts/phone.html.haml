@@ -104,6 +104,7 @@
 
           jQuery("<li class='phone-button medium on-call' data-conference='"+data.conference_name+"' id='phone-button-hangup' onclick='hangup();'> Hangup </li>").insertAfter('.off-call');
           jQuery("<li class='phone-button medium on-call' data-conference='"+data.conference_name+"' id='phone-button-hold'> Hold </li>").insertAfter('.off-call');
+          jQuery("li.on-call[data-conference='"+data.conference_name+"']").css('display','inline-block');
 
             audio.pause();
             clearInterval(audio_id);
