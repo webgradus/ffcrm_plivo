@@ -92,10 +92,10 @@
 
           audio_id = setInterval(function(){audio.play()},4500);
 
-          jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").css('display','inline-block');
 
           jQuery("<li class='phone-button medium on-incoming' data-conference='"+data.conference_name+"' id='phone-button-reject'> Reject </li>").insertAfter('.off-call');
           jQuery("<li class='phone-button medium on-incoming' data-conference='"+data.conference_name+"' id='phone-button-answer'> Answer </li>").insertAfter('.off-call');
+          jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").css('display','inline-block');
 
           jQuery('.off-call').hide();
 
