@@ -91,12 +91,19 @@
         if(jQuery('.off-call').css('display')!='none' && data.username == "#{current_user.username}"){
 
           audio_id = setInterval(function(){audio.play()},4500);
+
           jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").css('display','inline-block');
+
+          jQuery("<li class='phone-button medium on-incoming' data-conference='"+data.conference_name+"' id='phone-button-reject'> Reject </li>").insertAfter('.off-call');
+          jQuery("<li class='phone-button medium on-incoming' data-conference='"+data.conference_name+"' id='phone-button-answer'> Answer </li>").insertAfter('.off-call');
+
           jQuery('.off-call').hide();
 
           jQuery("#phone-button-answer[data-conference='"+data.conference_name+"']").bind("click",function(){
             jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
-            jQuery("li.on-call[data-conference='"+data.conference_name+"']").css('display','inline-block');
+
+          jQuery("<li class='phone-button medium on-call' data-conference='"+data.conference_name+"' id='phone-button-hangup' onclick='hangup();'> Hangup </li>").insertAfter('.off-call');
+          jQuery("<li class='phone-button medium on-call' data-conference='"+data.conference_name+"' id='phone-button-hold'> Hold </li>").insertAfter('.off-call');
 
             audio.pause();
             clearInterval(audio_id);
