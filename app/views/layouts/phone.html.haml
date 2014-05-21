@@ -89,9 +89,35 @@
 
       var connect = function(data) {
         if(jQuery('.off-call').css('display')!='none' && data.username == "#{current_user.username}"){
-          Plivo.conn.call(data.conference_name,{"X-Ph-User":"#{current_user.try(:id)}"});
+
+          audio_id = setInterval(function(){audio.play()},4500);
+          jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").css('display','inline-block');
           jQuery('.off-call').hide();
-          jQuery('.to-call').css('display','inline-block');
+
+          jQuery("#phone-button-answer[data-conference='"+data.conference_name+"']").bind("click",function(){
+            jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
+            jQuery("li.on-call[data-conference='"+data.conference_name+"']").css('display','inline-block');
+
+            audio.pause();
+            clearInterval(audio_id);
+
+            jQuery('.connect_user').remove();
+            jQuery('<input class="connect_user" type="hidden" name="conference" value="'+data.conference_name+'"></input>').insertAfter(".repcallbutton");
+            jQuery('.plivo-call').val('Connect');
+
+            Plivo.conn.call(data.conference_name, {"X-Ph-User": "#{current_user.try(:id)}"});
+          });
+          jQuery("#phone-button-reject[data-conference='"+data.conference_name+"']").bind("click",function(){
+            audio.pause();
+            clearInterval(audio_id);
+            jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
+            jQuery('.off-call').show();
+          })
+
+
+         // Plivo.conn.call(data.conference_name,{"X-Ph-User":"#{current_user.try(:id)}"});
+         // jQuery('.off-call').hide();
+         // jQuery('.to-call').css('display','inline-block');
         }
       }
       var send_number = function(data) {
