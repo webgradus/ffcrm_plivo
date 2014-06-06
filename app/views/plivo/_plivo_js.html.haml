@@ -94,6 +94,19 @@
       jQuery('#plivo-calling-modal').hide();
   }
 
+  function hold(conf_name) {
+    if(jQuery('#phone-button-hold[data-conference='+conf_name+']').text()=="Unhold"){
+      Plivo.conn.call(conf_name, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-Outbound": "true", "X-Ph-User": "#{current_user.try(:id)}"});
+      jQuery('#phone-button-hold[data-conference='+conf_name+']').text("Hold");
+    }
+    else
+    {
+      Plivo.conn.hangup({"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
+      jQuery('#phone-button-hold[data-conference='+conf_name+']').text("Unhold");
+    }
+
+  }
+
   function mute() {
     Plivo.conn.mute();
     jQuery('#linkUnmute').show('slow');
@@ -178,8 +191,8 @@
     Plivo.setRingTone(true);
     Plivo.setRingToneBack(true);
     Plivo.init({debug: true});
-    var username = "#{ Setting['plivo_endpoint_username'] }";
-    var pass = "#{ Setting['plivo_endpoint_password'] }";
+    var username = "#{ current_user.endpoint_username.present? ? current_user.endpoint_username : Setting['plivo_endpoint_username'] }";
+    var pass = "#{ current_user.endpoint_password.present? ? current_user.endpoint_password : Setting['plivo_endpoint_password'] }";
     Plivo.conn.login(username, pass);
     /*jQuery(document).on('click', '.plivo-call', function() {
 
