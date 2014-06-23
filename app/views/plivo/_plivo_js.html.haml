@@ -5,6 +5,7 @@
   }
   var permission = false;
   var button;
+  var current_conf = false;
   var audio = new Audio("http://#{request.host}:#{request.port}/phone.mp3"), audio_id;
   function onReady() {
     console.log("Plivo ready...");
@@ -48,12 +49,6 @@
   function onCallTerminated() {
     console.log("Plivo call terminated...");
     jQuery('.connect_user').remove();
-    jQuery('.on-call').hide();
-    jQuery('.off-call').show();
-    jQuery('.plivo-call').val('Call');
-    jQuery(window).unbind('beforeunload');
-    jQuery(button).text('Call');
-    jQuery('.plivo-call').val("Call");
   }
 
   function make_call(){
@@ -62,7 +57,7 @@
       dest = "1"+dest;
     }
     Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}","X-Ph-User": "#{current_user.id}"});
-
+    var current_conf = true;
     jQuery(window).unload(function(){
       Plivo.conn.hangup();
     });
@@ -84,27 +79,29 @@
     jQuery('.off-call').show();
   }
 
-  function hangup() {
-      jQuery(button).text('Call');
-      Plivo.conn.hangup({"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
-      jQuery('.connect_user').remove();
-    jQuery('.on-call').hide();
+  function hangup(name) {
+    var current_conf = false;
+    jQuery('.connect_user').remove();
+    jQuery('li[data-conf-id="'+name+'"]').remove();
     jQuery('.off-call').show();
-      jQuery(window).unbind('beforeunload');
-      jQuery('#plivo-calling-modal').hide();
+    Plivo.conn.hangup({"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
   }
 
   function hold(conf_name) {
-    if(jQuery('#phone-button-hold[data-conference='+conf_name+']').text()=="Unhold"){
-      Plivo.conn.call(conf_name, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-Outbound": "true", "X-Ph-User": "#{current_user.try(:id)}"});
-      jQuery('#phone-button-hold[data-conference='+conf_name+']').text("Hold");
-    }
-    else
-    {
+      jQuery('.connect_user').remove();
+      jQuery('.plivo-call').val("Call");
+      jQuery('li.on-call[data-conf-id="'+conf_name+'"]').hide();
+      jQuery('li.on-hold[data-conf-id="'+conf_name+'"]').css('display', 'inline-block');
       Plivo.conn.hangup({"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
-      jQuery('#phone-button-hold[data-conference='+conf_name+']').text("Unhold");
-    }
+  }
 
+  function unhold(conf_name) {
+    jQuery('.connect_user').remove();
+    jQuery('<input class="connect_user" type="hidden" name="conference" value="'+conf_name+'"></input>').insertAfter(".repcallbutton");
+    jQuery('.plivo-call').val("Connect");
+    jQuery('li.on-call[data-conf-id="'+conf_name+'"]').css('display', 'inline-block');
+    jQuery('li.on-hold[data-conf-id="'+conf_name+'"]').hide();
+    Plivo.conn.call(conf_name, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
   }
 
   function mute() {
@@ -133,7 +130,7 @@
   function onIncomingCall(account_name, extraHeaders) {
     console.log("onIncomingCall:"+account_name);
     console.log("extraHeaders=");
-    jQuery('.off-call').hide();
+    //jQuery('.off-call').hide();
     for (var key in extraHeaders) {
       console.log("key="+key+".val="+extraHeaders[key]);
     }
@@ -142,17 +139,18 @@
   }
   function answer() {
     jQuery('.on-incoming').hide();
-    jQuery('.off-call').hide();
+    //jQuery('.off-call').hide();
     jQuery('.on-call').css('display','inline-block');
     jQuery('.plivo-call').val("Connect");
     console.log("answering");
     Plivo.conn.answer();
+    current_conf = true;
   };
-  function reject() {
+  function reject(name) {
     console.log("rejecting");
-    jQuery('.on-incoming').hide();
-    jQuery('.on-call').hide();
-    jQuery('.off-call').show();
+    if(name){
+      jQuery('li[data-conf-id="'+name+'"]').remove();
+    }
     audio.pause();
     clearInterval(audio_id);
     Plivo.conn.reject();
@@ -160,20 +158,28 @@
 
   function call() {
     var dest = jQuery('#phone-input').val();
+    current_conf = true;
     if(dest[0]!="1" && dest.length==10){
       dest = "1"+dest;
     }
+    if(dest[0]=="+"){
+      dest = dest.substr(1);
+    }
     if(dest.length>0){
-      Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-Outbound": "true", "X-Ph-User": "#{current_user.try(:id)}"});
+
+
       jQuery('.connect_user').remove();
       jQuery('<input class="connect_user" type="hidden" name="conference" value="'+dest+'"></input>').insertAfter(".repcallbutton");
       jQuery('.plivo-call').val("Connect");
-      jQuery('.to-call').css('display','inline-block');
-      jQuery('.off-call').hide();
+
+      addButtons(dest, dest);
+
+      jQuery('li.on-call[data-conf-id="'+dest+'"]').css('display', 'inline-block');
+      Plivo.conn.call(dest, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-Outbound": "true", "X-Ph-User": "#{current_user.try(:id)}"});
     }
   };
 
-  jQuery(document).on('click','.off-call',function(){call();});
+  //jQuery(document).on('click','.off-call',function(){call();});
 
 
   jQuery(document).ready(function() {

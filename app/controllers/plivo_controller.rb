@@ -12,6 +12,7 @@ class PlivoController < ApplicationController
         business_time = false
       end
     end
+
     if not params["From"].starts_with?("sip") and not business_time
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.Response {
@@ -22,13 +23,17 @@ class PlivoController < ApplicationController
       end
     else
       callerId = params["From"].starts_with?("sip") ? params["X-PH-Phone"] : params["From"]
-      puts params
+
+      puts "---------------------"
+      puts params["From"].starts_with?("sip") ? params["To"] : params["CallUUID"]
+      puts "---------------------"
+
       builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
         xml.Response {
           #xml.Play "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
           xml.Speak "Hello! I'm connecting you with one of our managers." unless params["From"].starts_with?("sip")
-          xml.Conference(hangupOnStar: true, stayAlone: false, callbackUrl: plivo_phone_conference_url, waitSound: plivo_phone_music_url, startConferenceOnEnter: params["From"].starts_with?("sip") ? true : false, enterSound: 'beep:1'){
-            xml.text params["To"].to_s
+          xml.Conference(hangupOnStar: true, callbackUrl: plivo_phone_conference_url, waitSound: plivo_phone_music_url, startConferenceOnEnter: params["From"].starts_with?("sip") ? true : false, endConferenceOnExit: params["From"].starts_with?("sip") ? false : true, enterSound: 'beep:1'){
+            xml.text params["From"].starts_with?("sip") ? params["To"].split('@').first.split(':').last : params["CallUUID"]
           }
           #xml.Speak "Conference Stop"
 
@@ -62,8 +67,8 @@ class PlivoController < ApplicationController
           puts api.make_call("to" => params["To"], "from" => params["X-PH-Phone"], "answer_url" => plivo_phone_answer_conf_url)
           puts params["To"].to_s
         else
-          Pusher[params["To"]].trigger('conference_start',{
-            conference_name: params["To"].to_s
+          Pusher['internal'].trigger('conference_start',{
+            conference_name: params["To"].split('@').first.split(':').second
           })
         end
       else
@@ -71,22 +76,29 @@ class PlivoController < ApplicationController
         user = User.find_by_phone(params["To"])
         event_type = "inbound_call"
 
-        api = Plivo::RestAPI.new(Setting['plivo_auth_id'],Setting['plivo_auth_token'])
-        if api.get_live_conferences()[1]["conferences"].include?(params["To"].to_s)
+        #api = Plivo::RestAPI.new(Setting['plivo_auth_id'],Setting['plivo_auth_token'])
+        #if api.get_live_conferences()[1]["conferences"].include?(params["To"].to_s)
           #VoiceMail
-          builder = Nokogiri::XML::Builder.new do |xml|
-            xml.Response {
-              xml.Speak "Sorry, but all our managers are busy. Please leave a message after the beep. Press the star key when done."
-              xml.Record(action: plivo_get_record_url, maxLength: "30", finishOnKey: "*")
-              xml.Speak "Recording not received"
-            }
-          end
-        else
+        #  builder = Nokogiri::XML::Builder.new do |xml|
+        #    xml.Response {
+        #      xml.Speak "Sorry, but all our managers are busy. Please leave a message after the beep. Press the star key when done."
+        #      xml.Record(action: plivo_get_record_url, maxLength: "30", finishOnKey: "*")
+        #      xml.Speak "Recording not received"
+        #    }
+        #  end
+        #else
+          conf_id = params["CallUUID"]
           Pusher[params["To"].to_s].trigger('incoming_conference', {
-            conference_name: params["To"].to_s,
+            conference_name: conf_id,
             incoming_number: params["From"].to_s
+
           })
-        end
+
+          #Pusher[params["To"].to_s].trigger('incoming_conference', {
+          #  conference_name: params["To"].to_s,
+          #  incoming_number: params["From"].to_s
+          #})
+        #end
       end
       if item && user
         Version.create(:whodunnit => user.id.to_s, :event => event_type, :item_id => item.id, :item_type => item.class.model_name)
@@ -149,7 +161,7 @@ class PlivoController < ApplicationController
   def conference
     puts params
     if params["ConferenceAction"] == "exit" and params["ConferenceLastMember"] == "true"
-      Pusher[params["ConferenceName"]].trigger('conference_end',{
+      Pusher["internal"].trigger('conference_end',{
         conference_name: params["ConferenceName"]
       })
     end
@@ -161,19 +173,20 @@ class PlivoController < ApplicationController
     if params["Event"] == "Hangup"
       api = Plivo::RestAPI.new(Setting['plivo_auth_id'],Setting['plivo_auth_token'])
       api.hangup_conference("conference_name" => params["To"])
+      render nothing: true
     else
       builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
           xml.Response {
             #xml.Play "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
             xml.Speak "Hello! I'm connecting you with one of our managers." unless params["From"].starts_with?("sip")
-            xml.Conference(stayAlone: false, callbackUrl: plivo_phone_conference_url, enterSound: 'beep:1', waitSound: plivo_phone_music_url, startConferenceOnEnter: false){
+            xml.Conference(callbackUrl: plivo_phone_conference_url, enterSound: 'beep:1', waitSound: plivo_phone_music_url, startConferenceOnEnter: false){
               xml.text params["To"].to_s
             }
           }
       end
       puts params["To"].to_s
+      render :xml => builder
     end
-    render :xml => builder
   end
 
   def send_phone

@@ -4,7 +4,9 @@
   %li#phone-button-reject.phone-button.medium.on-incoming{:data => { conference: numb.number.to_s }}
     Reject
 
-  %li#phone-button-hold.phone-button.medium.on-call{:data => { conference: numb.number.to_s }}
+  %li#phone-button-hold.phone-button.medium.on-call(onclick="hold('#{numb.number.to_s}');"){:data => { conference: numb.number.to_s }}
     Hold
+  %li#phone-button-unhold.phone-button.medium.on-hold(onclick="hold('#{numb.number.to_s}');"){data: { conference: numb.number.to_s }}
+    Unhold
   %li#phone-button-hangup.phone-button.medium.on-call(onclick="hangup();"){:data => { conference: numb.number.to_s }}
     Hangup

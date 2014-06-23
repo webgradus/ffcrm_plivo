@@ -132,7 +132,7 @@
 #phonebook {
 
   section {
-    width: 18rem;
+    width: 19rem;
   }
 
   .phone-button {
@@ -152,6 +152,14 @@
     max-height: 350px;
     padding: 0;
     margin: 0;
+  }
+  li.call-title {
+    text-align: center;
+    border-top: 2px solid #aaa;
+    padding-top: 5px;
+    font-size: 15px;
+    margin: 0.25rem;
+    width: 16.5rem;
   }
   .phone-button > aside {
     position: absolute;
@@ -186,9 +194,13 @@
     text-align: center;
     width: 7.85rem;
   }
-  #phone-button-hold {
+  #phone-button-hold, #phone-button-unhold {
     background-color: #ec0;
     color: white;
+  }
+
+  #phone-button-unhold {
+    text-align: center;
   }
 
   #phone-button-answer {
@@ -289,7 +301,7 @@
     box-sizing: border-box;
     line-height: 1.5em;
   }
-  .on-call, .on-incoming {
+  .on-call, .on-incoming, .on-hold {
     display: none;
   }
   #replist > p {

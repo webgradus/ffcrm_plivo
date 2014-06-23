@@ -35,23 +35,43 @@
     <script src="http://js.pusher.com/2.1/pusher.min.js" type="text/javascript"></script>
     :javascript
       // Enable pusher logging - don't include this in production
-      Pusher.log = function(message) {
-        if (window.console && window.console.log) {
-          window.console.log(message);
-        }
-      };
+        Pusher.log = function(message) {
+          if (window.console && window.console.log) {
+            window.console.log(message);
+          }
+        };
+
+      var addButtons = function(name, number){
+        jQuery('#phone ul').append("<li class='call-title' data-conf-id='"+name+"'>"+number+"</li>");
+
+        jQuery('#phone ul').append("<li class='phone-button medium on-call' onclick=hold('"+name+"') id='phone-button-hold' data-conf-id='"+name+"'>Hold</li>");
+        jQuery('#phone ul').append("<li class='phone-button large on-hold' onclick=unhold('"+name+"') id='phone-button-unhold' data-conf-id='"+name+"'>Unhold</li>");
+
+        jQuery('#phone ul').append("<li class='phone-button medium on-call' onclick=hangup('"+name+"') id='phone-button-hangup' data-conf-id='"+name+"'>Hangup</li>");
+      
+        jQuery('#phone ul').append("<li class='phone-button medium on-incoming' id='phone-button-answer' data-conf-id='"+name+"'>Answer</li>");
+        jQuery('#phone ul').append("<li class='phone-button medium on-incoming' id='phone-button-reject' onclick=reject('"+name+"') data-conf-id='"+name+"'>Reject</li>");
+      }
+
 
       var inc_conf = function(data) {
         //Add buttons for conference
-        //TODO Show incoming number
-        if(jQuery('.off-call').css('display')!='none'){
-          audio_id = setInterval(function(){audio.play()},4500);
-          jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").css('display','inline-block');
-          jQuery('.off-call').hide();
+        //if(jQuery('.off-call').css('display')!='none'){
+          console.log(current_conf);
+          if(!current_conf){
+            audio_id = setInterval(function(){audio.play()},4500);
+          }
 
-          jQuery("#phone-button-answer[data-conference='"+data.conference_name+"']").bind("click",function(){
-            jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
-            jQuery("li.on-call[data-conference='"+data.conference_name+"']").css('display','inline-block');
+          //Add buttons with params
+          addButtons(data.conference_name, data.incoming_number);
+
+          jQuery("li.on-incoming[data-conf-id='"+data.conference_name +"']").css('display','inline-block');
+          //jQuery('.off-call').hide();
+
+          jQuery("#phone-button-answer[data-conf-id='"+data.conference_name+"']").bind("click",function(){
+            if(!current_conf){
+            jQuery("li.on-incoming[data-conf-id='"+data.conference_name +"']").hide();
+            jQuery("li.on-call[data-conf-id='"+data.conference_name+"']").css('display','inline-block');
 
             audio.pause();
             clearInterval(audio_id);
@@ -60,54 +80,58 @@
             jQuery('<input class="connect_user" type="hidden" name="conference" value="'+data.conference_name+'"></input>').insertAfter(".repcallbutton");
             jQuery('.plivo-call').val('Connect');
 
+            console.log(data.conference_name);
             Plivo.conn.call(data.conference_name, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
+            }
           });
-          jQuery("#phone-button-reject[data-conference='"+data.conference_name+"']").bind("click",function(){
+
+          jQuery("#phone-button-reject[data-conf-id='"+data.conference_name+"']").bind("click",function(){
             audio.pause();
             clearInterval(audio_id);
-            jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
+            jQuery("li.on-incoming[data-conf-id='"+data.conference_name +"']").hide();
             jQuery('.off-call').show();
           })
-        }
+        //}
       };
 
       var conf_start = function(data) {
-        jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
-        if(jQuery("li.on-call[data-conference='"+data.conference_name+"']").css('display')=='none' && jQuery('.to-call').css('display')=='none'){
+        if(jQuery("li.on-incoming[data-conf-id='"+data.conference_name+"']").css('display')!='none'){
+          jQuery("li[data-conf-id="+data.conference_name+"]").remove();
           audio.pause();
           clearInterval(audio_id);
-          jQuery('.off-call').show();
+          //jQuery('.off-call').show();//???
         };
       };
       var conf_end = function(data) {
-        jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
+        jQuery("li[data-conf-id="+data.conference_name+"]").remove();
         audio.pause();
         clearInterval(audio_id);
-        jQuery('.off-call').show();
+        //jQuery('.off-call').show();
 
       };
 
       var connect = function(data) {
-        if(jQuery('.off-call').css('display')!='none' && data.username == "#{current_user.username}"){
+        if(data.username == "#{current_user.username}"){
+          
+          if(!current_conf){
+            audio_id = setInterval(function(){audio.play()},4500);
+          }
 
-          audio_id = setInterval(function(){audio.play()},4500);
+          addButtons(data.conference_name, data.initiator);
+          jQuery('li.on-incoming[data-conf-id="'+data.conference_name+'"]').css('display', 'inline-block');
 
 
-          jQuery("<li class='phone-button medium on-incoming' data-conference='"+data.conference_name+"' id='phone-button-reject'> Reject </li>").insertAfter('.off-call');
-          jQuery("<li class='phone-button medium on-incoming' data-conference='"+data.conference_name+"' id='phone-button-answer'> Answer </li>").insertAfter('.off-call');
-          jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").css('display','inline-block');
+          //jQuery('.off-call').hide();
 
-          jQuery('.off-call').hide();
+          jQuery("#phone-button-answer[data-conf-id='"+data.conference_name+"']").bind("click",function(){
+            jQuery("li.on-incoming[data-conf-id='"+data.conference_name +"']").hide();
 
-          jQuery("#phone-button-answer[data-conference='"+data.conference_name+"']").bind("click",function(){
-            jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
-
-          jQuery("<li class='phone-button medium on-call' data-conference='"+data.conference_name+"' id='phone-button-hangup' onclick='hangup();'> Hangup </li>").insertAfter('.off-call');
-          jQuery("<li class='phone-button medium on-call' data-conference='"+data.conference_name+"' id='phone-button-hold'> Hold </li>").insertAfter('.off-call');
-          jQuery("li.on-call[data-conference='"+data.conference_name+"']").css('display','inline-block');
+            jQuery("li.on-call[data-conf-id='"+data.conference_name+"']").css('display','inline-block');
 
             audio.pause();
             clearInterval(audio_id);
+
+            current_conf = true;
 
             jQuery('.connect_user').remove();
             jQuery('<input class="connect_user" type="hidden" name="conference" value="'+data.conference_name+'"></input>').insertAfter(".repcallbutton");
@@ -115,12 +139,12 @@
 
             Plivo.conn.call(data.conference_name, {"X-Ph-User": "#{current_user.try(:id)}"});
           });
-          jQuery("#phone-button-reject[data-conference='"+data.conference_name+"']").bind("click",function(){
+
+          jQuery("#phone-button-reject[data-conf-id='"+data.conference_name+"']").bind("click",function(){
             audio.pause();
             clearInterval(audio_id);
-            jQuery("li.on-incoming[data-conference='"+data.conference_name +"']").hide();
-            jQuery('.off-call').show();
-          })
+            jQuery("li[data-conf-id='"+data.conference_name +"']").remove();
+          });
 
 
          // Plivo.conn.call(data.conference_name,{"X-Ph-User":"#{current_user.try(:id)}"});
@@ -180,14 +204,30 @@
       channel.bind('in_call', in_call);
       channel.bind('free', free_user);
       channel.bind('online_user', online_user);
+      channel.bind('conference_end', conf_end);
+      channel.bind('conference_start', conf_start);
 
       jQuery(document).on('click','.plivo-call',function(){
-        if(jQuery('.off-call').css('display')!='none'){
-          jQuery('.to-call').css('display','inline-block');
-          jQuery('.off-call').hide();
-          jQuery('<input class="connect_user" type="hidden" name="conference" value="'+"#{current_user.username}_"+jQuery(this).data("username")+'"></input>').insertAfter(".repcallbutton");
-          Plivo.conn.call("#{current_user.username}_"+jQuery(this).data("username"), {"X-Ph-User": "#{current_user.try(:id)}"});
+        
+        if(jQuery(this).val()=="Call"){
+          var conf_name = "#{current_user.username}_"+jQuery(this).data("username");
+          addButtons(conf_name, jQuery(this).data("username"));
+          jQuery('li.on-call[data-conf-id="'+conf_name+'"]').css('display', 'inline-block');
+          jQuery('<input class="connect_user" type="hidden" name="conference" value="'+conf_name+'"></input>').insertAfter(".repcallbutton");
+          current_conf = true; 
+          Plivo.conn.call(conf_name, {"X-Ph-User": "#{current_user.try(:id)}"});
         }
+        //if(jQuery('.off-call').css('display')!='none'){
+        //  jQuery('.to-call').css('display','inline-block');
+        //  jQuery('.on-hold.to-call').css('display','none');
+        //  jQuery('.on-hold.to-call').click(function(){hold("#{current_user.username}_"+jQuery(this).data("username"), {"X-Ph-User": "#{current_user.try(:id)}"});});
+        //  jQuery('#phone-button-hold.to-call').click(function(){hold("#{current_user.username}_"+jQuery(this).data("username"), {"X-Ph-User": "#{current_user.try(:id)}"});});
+        //  jQuery('.off-call').hide();
+        //  jQuery('<input class="connect_user" type="hidden" name="conference" value="'+"#{current_user.username}_"+jQuery(this).data("username")+'"></input>').insertAfter(".repcallbutton");
+        //  var current_conf = true;
+        //  Plivo.conn.call("#{current_user.username}_"+jQuery(this).data("username"), {"X-Ph-User": "#{current_user.try(:id)}"});
+        //}
+
       });
 
   %body

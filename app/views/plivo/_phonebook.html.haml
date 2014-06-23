@@ -43,19 +43,11 @@
       %li#phone-button-pound.phone-button(onclick="dtmf('#');")
         \#
 
-      %li#phone-button-hold.phone-button.medium.on-call.to-call
-        Hold
-      %li#phone-button-hangup.phone-button.medium.on-call.to-call(onclick="hangup();")
-        Hangup
+
       %li#phone-button-call.phone-button.large.off-call(onclick="call();")
         Call
 
-      %li#phone-button-answer.phone-button.medium.on-incoming(onclick="answer();")
-        Answer
-      %li#phone-button-reject.phone-button.medium.on-incoming(onclick="reject();")
-        Reject
 
-      =render "conference_buttons"
 
   %section#replist
     %p
@@ -64,6 +56,6 @@
       -User.select{|u| u != current_user }.each do |user|
         %li{:class => "#{user.online? ? user.available? ? 'online' : 'busy' : 'offline'}", data: {:username => "#{user.username}", :phone => "#{user.plivo_numbers.first.number if user.plivo_numbers.present?}", :'user-id' => "#{user.id}"}}
           = user.full_name
-          =button_to user.available? ? "Call" : "Not Available",plivo_call_path(username: user.username), class: "#{'plivo-call' if user.available?} repcallbutton", remote: true, data: {username: "#{user.username}"}, disabled: !user.available?
+          = button_to user.available? ? "Call" : "Not Available",plivo_call_path(username: user.username), class: "#{'plivo-call' if user.available?} repcallbutton", remote: true, data: {username: "#{user.username}"}, disabled: !user.available?
 
           %aside
