@@ -149,7 +149,8 @@ class PlivoController < ApplicationController
   def call
     Pusher['internal'].trigger('call', {
       conference_name: params[:conference].present? ? params[:conference] : current_user.username+'_'+params[:username],
-      username: params[:username]
+      username: params[:username],
+      initiator: current_user.username
     })
     render nothing: true
   end
