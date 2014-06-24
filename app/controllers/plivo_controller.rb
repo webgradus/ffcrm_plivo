@@ -67,9 +67,11 @@ class PlivoController < ApplicationController
           puts api.make_call("to" => params["To"], "from" => params["X-PH-Phone"], "answer_url" => plivo_phone_answer_conf_url)
           puts params["To"].to_s
         else
-          Pusher['internal'].trigger('conference_start',{
-            conference_name: params["To"].split('@').first.split(':').second
-          })
+          unless params["To"].starts_with?("sip")
+            Pusher['internal'].trigger('conference_start',{
+              conference_name: params["To"].split('@').first.split(':').second
+            })
+          end
         end
       else
         item = Account.by_any_phone(params["From"]) || Contact.by_any_phone(params["From"])

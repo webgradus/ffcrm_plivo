@@ -69,7 +69,7 @@
           //jQuery('.off-call').hide();
 
           jQuery("#phone-button-answer[data-conf-id='"+data.conference_name+"']").bind("click",function(){
-            if(!current_conf){
+            if(jQuery('li.on-call').css('display')!='inline-block'){//!current_conf){
             jQuery("li.on-incoming[data-conf-id='"+data.conference_name +"']").hide();
             jQuery("li.on-call[data-conf-id='"+data.conference_name+"']").css('display','inline-block');
 

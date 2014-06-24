@@ -96,12 +96,14 @@
   }
 
   function unhold(conf_name) {
-    jQuery('.connect_user').remove();
-    jQuery('<input class="connect_user" type="hidden" name="conference" value="'+conf_name+'"></input>').insertAfter(".repcallbutton");
-    jQuery('.plivo-call').val("Connect");
-    jQuery('li.on-call[data-conf-id="'+conf_name+'"]').css('display', 'inline-block');
-    jQuery('li.on-hold[data-conf-id="'+conf_name+'"]').hide();
-    Plivo.conn.call(conf_name, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
+    if(jQuery('li.on-call[data-conf-id!="'+conf_name+'"]').css('display')!='inline-block'){
+      jQuery('.connect_user').remove();
+      jQuery('<input class="connect_user" type="hidden" name="conference" value="'+conf_name+'"></input>').insertAfter(".repcallbutton");
+      jQuery('.plivo-call').val("Connect");
+      jQuery('li.on-call[data-conf-id="'+conf_name+'"]').css('display', 'inline-block');
+      jQuery('li.on-hold[data-conf-id="'+conf_name+'"]').hide();
+      Plivo.conn.call(conf_name, {"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
+    }
   }
 
   function mute() {
