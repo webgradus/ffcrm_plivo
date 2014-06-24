@@ -80,7 +80,7 @@
   }
 
   function hangup(name) {
-    var current_conf = false;
+    current_conf = false;
     jQuery('.connect_user').remove();
     jQuery('li[data-conf-id="'+name+'"]').remove();
     jQuery('.off-call').show();
@@ -150,6 +150,7 @@
   };
   function reject(name) {
     console.log("rejecting");
+    current_conf = false;
     if(name){
       jQuery('li[data-conf-id="'+name+'"]').remove();
     }
