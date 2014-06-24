@@ -214,7 +214,7 @@
           addButtons(conf_name, jQuery(this).data("username"));
           jQuery('li.on-call[data-conf-id="'+conf_name+'"]').css('display', 'inline-block');
           jQuery('<input class="connect_user" type="hidden" name="conference" value="'+conf_name+'"></input>').insertAfter(".repcallbutton");
-          current_conf = true; 
+          current_conf = true;
           Plivo.conn.call(conf_name, {"X-Ph-User": "#{current_user.try(:id)}"});
         }
         //if(jQuery('.off-call').css('display')!='none'){
