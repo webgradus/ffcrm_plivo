@@ -269,6 +269,7 @@
             jQuery(this).removeClass('busy');
             jQuery(this).addClass('offline');
             jQuery(this).find('input[type="submit"]').val('Not Available');
+            jQuery(this).find('input[type="submit"]').removeClass('plivo-call');
             jQuery(this).find('input[type="submit"]').attr('disabled', 'disabled');
           }
         })
