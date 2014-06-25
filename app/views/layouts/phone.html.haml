@@ -137,7 +137,7 @@
             jQuery('<input class="connect_user" type="hidden" name="conference" value="'+data.conference_name+'"></input>').insertAfter(".repcallbutton");
             jQuery('.plivo-call').val('Connect');
 
-            Plivo.conn.call(data.conference_name, {"X-Ph-User": "#{current_user.try(:id)}"});
+            Plivo.conn.call(data.conference_name, {"X-PH-User": "#{current_user.try(:id)}"});
           });
 
           jQuery("#phone-button-reject[data-conf-id='"+data.conference_name+"']").bind("click",function(){
@@ -211,7 +211,7 @@
         
         if(jQuery(this).val()=="Call"){
           var conf_name = "#{current_user.username}_"+jQuery(this).data("username");
-          addButtons(conf_name, jQuery(this).data("username"));
+          addButtons(conf_name, jQuery(this).parent().parent().parent().text().trim());
           jQuery('li.on-call[data-conf-id="'+conf_name+'"]').css('display', 'inline-block');
           jQuery('<input class="connect_user" type="hidden" name="conference" value="'+conf_name+'"></input>').insertAfter(".repcallbutton");
           current_conf = true;
