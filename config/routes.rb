@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     post "/plivo/phone/music" => "plivo#music"
     post "/users/online" => "users#online"
     resources :messages, only: :create
+    resources :voicemails
     namespace :admin do
       resources :plivo, except: :show do
         collection do

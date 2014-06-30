@@ -31,10 +31,14 @@ class PlivoController < ApplicationController
       builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
         xml.Response {
           #xml.Play "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
-          xml.Speak "Hello! I'm connecting you with one of our managers." unless params["From"].starts_with?("sip")
+          xml.Speak "Hello! I'm connecting you with one of our managers. If you don't want to wait you can press the star key to leave a message." unless params["From"].starts_with?("sip")
           xml.Conference(hangupOnStar: true, callbackUrl: plivo_phone_conference_url, waitSound: plivo_phone_music_url, startConferenceOnEnter: params["From"].starts_with?("sip") ? true : false, endConferenceOnExit: params["From"].starts_with?("sip") ? false : true, enterSound: 'beep:1'){
             xml.text params["From"].starts_with?("sip") ? params["To"].split('@').first.split(':').last : params["CallUUID"]
           }
+          xml.Speak "Please leave a message after the beep. Press the star key when done."
+          xml.Record(action: plivo_get_record_url, maxLength: "30", finishOnKey: "*")
+          xml.Speak "Recording not received"
+
           #xml.Speak "Conference Stop"
 
           #xml.Dial(:callerId => callerId) {
@@ -106,7 +110,7 @@ class PlivoController < ApplicationController
         Version.create(:whodunnit => user.id.to_s, :event => event_type, :item_id => item.id, :item_type => item.class.model_name)
       end
     end
-
+    
     render :xml => builder
   end
 
@@ -143,7 +147,7 @@ class PlivoController < ApplicationController
   def get_record
     plivo_number = PlivoNumber.find_by_number(params[:To])
     if plivo_number
-      plivo_number.voice_mails.create(from: params["From"], record_url: params["RecordUrl"])
+      plivo_number.voice_mails.create(from: params["From"], record_url: params["RecordUrl"], record_id: params["RecordingID"])
     end
     render nothing: true
   end

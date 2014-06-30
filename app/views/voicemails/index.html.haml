@@ -1,0 +1,9 @@
+.title
+  %span
+    Voicemails
+  = image_tag("loading.gif", :size => :thumb, :id => "loading", :style => "display: none;")
+.list
+  -if @voicemails.any?
+    = render partial: 'voicemail', collection: @voicemails
+  -else
+    Couldn't find any voicemails.

@@ -1,0 +1,19 @@
+%li.highlight
+  %ul.tools
+    -if can?(:destroy, voicemail)
+      %li= link_to 'Delete!', voicemail_path(voicemail), method: :delete, confirm: 'Are you sure?'
+  %div
+    %dt{style: 'padding: 2px 0 5px'}
+      from:
+      %b
+        = voicemail.from
+      to:
+      %b
+        = voicemail.plivo_number.number
+      = t(:added_ago, time_ago_in_words(voicemail.created_at))
+      (
+      =voicemail.created_at
+      )
+  = audio_tag voicemail.record_url, controls: true
+    
+
