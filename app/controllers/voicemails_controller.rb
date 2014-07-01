@@ -1,4 +1,6 @@
 class VoicemailsController < ApplicationController
+  before_filter :set_current_tab, :only => :index
+  before_filter :require_user
   def index
     @voicemails = VoiceMail.all
   end
