@@ -35,9 +35,10 @@ class PlivoController < ApplicationController
           xml.Conference(hangupOnStar: true, callbackUrl: plivo_phone_conference_url, waitSound: plivo_phone_music_url, startConferenceOnEnter: params["From"].starts_with?("sip") ? true : false, endConferenceOnExit: params["From"].starts_with?("sip") ? false : true, enterSound: 'beep:1'){
             xml.text params["From"].starts_with?("sip") ? params["To"].split('@').first.split(':').last : params["CallUUID"]
           }
-          xml.Speak "Please leave a message after the beep. Press the star key when done."
-          xml.Record(action: plivo_get_record_url, maxLength: "30", finishOnKey: "*")
-          xml.Speak "Recording not received"
+
+            xml.Speak "Please leave a message after the beep. Press the star key when done." unless params["From"].starts_with?("sip")
+            xml.Record(action: plivo_get_record_url, maxLength: "30", finishOnKey: "*") unless params["From"].starts_with?("sip")
+            xml.Speak "Recording not received" unless params["From"].starts_with?("sip")
 
           #xml.Speak "Conference Stop"
 
@@ -185,7 +186,6 @@ class PlivoController < ApplicationController
       builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
           xml.Response {
             #xml.Play "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
-            xml.Speak "Hello! I'm connecting you with one of our managers." unless params["From"].starts_with?("sip")
             xml.Conference(callbackUrl: plivo_phone_conference_url, enterSound: 'beep:1', waitSound: plivo_phone_music_url, startConferenceOnEnter: false){
               xml.text params["To"].to_s
             }

@@ -10,6 +10,7 @@ class VoicemailsController < ApplicationController
     resp = p.delete_recording('recording_id' => @voicemail.record_id)
     if resp.first == 204
       @voicemail.destroy
+      @voicemails = VoiceMail.all
       render :index
     else
       redirect_to voicemails_path, flash: { error: "Problem with connection to Plivo Service" }
