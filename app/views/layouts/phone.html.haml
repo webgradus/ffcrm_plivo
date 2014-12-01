@@ -104,7 +104,7 @@
       };
       var conf_end = function(data) {
         jQuery("li[data-conf-id=" + data.conference_name + "]").remove();
-        if(data.conference_name == jQuery('#phone-input').val()){
+        if((data.conference_name == jQuery('#phone-input').val()) || ('+' + data.conference_name == jQuery('#phone-input').val()) ){
           jQuery('#phone-input').val('');
         }
         audio.pause();
