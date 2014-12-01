@@ -84,6 +84,7 @@
     jQuery('.connect_user').remove();
     jQuery('li[data-conf-id="'+name+'"]').remove();
     jQuery('.off-call').show();
+    jQuery('#phone-input').val('');
     Plivo.conn.hangup({"X-Ph-Phone": "#{current_user.try(:phone)}", "X-Ph-User": "#{current_user.try(:id)}"});
   }
 
