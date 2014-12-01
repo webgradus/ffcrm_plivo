@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  uuid: MyString
+  event: MyString
+  from_id: 1
+  from_type: MyString
+  from: MyString
+
+two:
+  uuid: MyString
+  event: MyString
+  from_id: 1
+  from_type: MyString
+  from: MyString

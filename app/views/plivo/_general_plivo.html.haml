@@ -1,6 +1,10 @@
 :javascript
   jQuery(document).ready(function(){
-    jQuery('#{ link_to "Phone", '#', id: "open_phone", onclick: "window.open('#{plivo_phone_path}', 'phone','width=200'); return false;" }').insertAfter("#jumper");
+    jQuery('<a href="#" id="open_phone">Phone</a>').insertAfter("#jumper");
+    jQuery('#open_phone').click(function(){
+      window.open("/plivo/phone", "phone", "width=325, height=850");
+      return false;
+    });
     jQuery('#open_phone').before(' | ');
     var a = document.getElementById('open_phone');
     var evt = document.createEvent("MouseEvents");

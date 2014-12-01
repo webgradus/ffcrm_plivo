@@ -67,12 +67,12 @@ class PlivoController < ApplicationController
           user_id: params["X-PH-User"]
         })
 
-        if params["X-PH-Outbound"]=="true"
+        if params["X-PH-Outbound"] == "true"
           api = Plivo::RestAPI.new(Setting['plivo_auth_id'],Setting['plivo_auth_token'])
           puts api.make_call("to" => params["To"], "from" => params["X-PH-Phone"], "answer_url" => plivo_phone_answer_conf_url)
           puts params["To"].to_s
         else
-          unless params["To"].starts_with?("sip")
+          if params["To"].starts_with?("sip")
             Pusher['internal'].trigger('conference_start',{
               conference_name: params["To"].split('@').first.split(':').second
             })
@@ -107,8 +107,15 @@ class PlivoController < ApplicationController
           #})
         #end
       end
+
       if item && user
-        Version.create(:whodunnit => user.id.to_s, :event => event_type, :item_id => item.id, :item_type => item.class.model_name)
+        if event_type == 'inbound_call'
+          call = Call.create(uuid: params['CallUUID'], event: event_type, from_id: item.id, from_type: item.class.model_name, to: params["To"])
+        elsif event_type == 'outbound_call'
+          call = Call.create(uuid: params['CallUUID'], event: event_type, from_id: user.id, from_type: user.class.model_name, to: params["To"])
+        end
+        Version.create(:whodunnit => user.id.to_s, :event => event_type, :item_id => item.id, :item_type => item.class.model_name, object: call.nil? ? '' : call.id)
+
       end
     end
     
@@ -125,7 +132,12 @@ class PlivoController < ApplicationController
     Pusher["internal"].trigger("free",{
       user_id: user_id
     })
-    #puts params
+
+    call = Call.find_by_uuid(params['CallUUID'])
+    if call and params['action'] == 'hangup'
+      call.update_attributes(start_time: params['StartTime'], answer_time: params['AnswerTime'], end_time: params['EndTime'], duration: params['Duration'])
+    end
+
     builder = Nokogiri::XML::Builder.new do |xml|
       xml.Response {
         #xml.Play "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
@@ -146,9 +158,16 @@ class PlivoController < ApplicationController
   end
 
   def get_record
+    puts params
     plivo_number = PlivoNumber.find_by_number(params[:To])
+    call = Call.find_by_uuid(params["CallUUID"])
+
     if plivo_number
-      plivo_number.voice_mails.create(from: params["From"], record_url: params["RecordUrl"], record_id: params["RecordingID"])
+      vm = plivo_number.voice_mails.create(from: params["From"], record_url: params["RecordUrl"], record_id: params["RecordingID"])
+
+      if vm and call
+        vm.update_attribute(:call_id, call.id)
+      end
     end
     render nothing: true
   end
