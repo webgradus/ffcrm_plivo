@@ -51,7 +51,7 @@
     jQuery('.connect_user').remove();
   }
 
-  function make_call(){
+  /*function make_call(){
     var dest = jQuery(button).data('phone').toString();
     if(dest[0]!="1" && dest.length==10){
       dest = "1"+dest;
@@ -61,7 +61,7 @@
     jQuery(window).unload(function(){
       Plivo.conn.hangup();
     });
-  }
+  }*/
 
   function onMediaPermission(result) {
       if (result) {
