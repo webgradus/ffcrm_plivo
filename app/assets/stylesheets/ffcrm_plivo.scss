@@ -130,7 +130,7 @@
 
 
 #phonebook {
-
+  min-height: 100%;
   section {
     width: 19rem;
   }
@@ -148,8 +148,6 @@
     position: relative;
   }
   ul {
-    overflow-y: auto;
-    max-height: 350px;
     padding: 0;
     margin: 0;
   }
@@ -311,10 +309,13 @@
   #replist {
     padding: 0.25rem 0.25rem 1rem;
     box-sizing: border-box;
+    height: 50%;
+    overflow-y: auto;
   }
   #phone {
     padding: 1rem 0.5rem;
     box-sizing: border-box;
+    height: 45%;
   }
   #replist > ul > li:hover {
     background-color: aliceblue;
