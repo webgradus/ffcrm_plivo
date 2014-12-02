@@ -230,6 +230,8 @@
     margin: 0;
     padding: 0;
     text-indent: 0;
+    overflow-y: auto;
+    height: 50%;
   }
   #replist > ul > li {
     box-sizing: border-box;
@@ -309,13 +311,11 @@
   #replist {
     padding: 0.25rem 0.25rem 1rem;
     box-sizing: border-box;
-    height: 50%;
-    overflow-y: auto;
   }
   #phone {
     padding: 1rem 0.5rem;
     box-sizing: border-box;
-    height: 45%;
+    min-height: 400px;
   }
   #replist > ul > li:hover {
     background-color: aliceblue;
