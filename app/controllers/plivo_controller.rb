@@ -31,7 +31,7 @@ class PlivoController < ApplicationController
         xml.Response {
           #xml.Play "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
           xml.Speak "Hello! I'm connecting you with one of our managers. If you don't want to wait you can press the star key to leave a message." unless params["From"].starts_with?("sip")
-          xml.Conference(hangupOnStar: true, callbackUrl: plivo_phone_conference_url, waitSound: plivo_phone_music_url, startConferenceOnEnter: params["From"].starts_with?("sip") ? true : false, endConferenceOnExit: params["From"].starts_with?("sip") ? false : true){
+          xml.Conference(hangupOnStar: true, callbackUrl: plivo_phone_conference_url, waitSound: plivo_phone_music_url, startConferenceOnEnter: params["From"].starts_with?("sip") ? true : false, stayAlone: params["From"].starts_with?("sip") ? false : true){
             xml.text params["From"].starts_with?("sip") ? params["To"].split('@').first.split(':').last : params["CallUUID"]
           }
 
