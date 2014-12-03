@@ -4,8 +4,8 @@ class PlivoController < ApplicationController
   def answer
     #puts params
     business_time = true
-    unless params["From"].starts_with?("sip")
-      number = PlivoNumber.find_by_number(params["To"])
+    unless params['From'].starts_with?('sip')
+      number = PlivoNumber.find_by_number(params['To'])
       (number and number.business_time?) ? business_time = true : business_time = false
     end
 
@@ -31,7 +31,7 @@ class PlivoController < ApplicationController
         xml.Response {
           #xml.Play "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
           xml.Speak "Hello! I'm connecting you with one of our managers. If you don't want to wait you can press the star key to leave a message." unless params["From"].starts_with?("sip")
-          xml.Conference(hangupOnStar: true, callbackUrl: plivo_phone_conference_url, waitSound: plivo_phone_music_url, startConferenceOnEnter: params["From"].starts_with?("sip") ? true : false, stayAlone: params["From"].starts_with?("sip") ? false : true){
+          xml.Conference(hangupOnStar: true, callbackUrl: plivo_phone_conference_url, waitSound: plivo_phone_music_url, startConferenceOnEnter: params["From"].starts_with?("sip") ? true : false){
             xml.text params["From"].starts_with?("sip") ? params["To"].split('@').first.split(':').last : params["CallUUID"]
           }
 
@@ -76,7 +76,7 @@ class PlivoController < ApplicationController
           api.make_call("to" => params["To"], "from" => params["X-PH-Phone"], "answer_url" => plivo_phone_answer_conf_url, "caller_name" => 'dev.daqe.com')
           #puts params["To"].to_s
         else
-          if params["To"].starts_with?("sip")
+          if params["To"].starts_with?("sip") and not params["To"].include?(user_by_id.username)
             Pusher['internal'].trigger('conference_start',{
               conference_name: params["To"].split('@').first.split(':').second
             })
